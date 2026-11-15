@@ -17,5 +17,6 @@ Metti le foto in `assets/foto/` con questi nomi: `berretta.jpg`, `sciarpotto.jpg
 - `script.js` – contatti, configuratore, animazioni
 
 ## Crediti foto
-- `assets/foto/berretta-2.jpg` e `assets/foto/sciarpotto-2.jpg`: Maria Kovalets su Unsplash (licenza Unsplash, uso commerciale libero).
+- `assets/foto/berretta-2.jpg`: Pezibear su Pixabay (licenza Pixabay, uso commerciale libero).
+- `assets/foto/sciarpotto-2.jpg`: Maria Kovalets su Unsplash (licenza Unsplash, uso commerciale libero).
 - Le altre foto in `assets/foto/` sono state fornite dalla proprietaria del sito.
