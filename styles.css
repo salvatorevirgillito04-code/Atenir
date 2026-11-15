@@ -153,6 +153,7 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .editor { background: var(--superficie); }
 .editor-testa { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 24px 48px; }
 .editor-testa .intro { margin: 0; }
+.editor-corpo > * { min-width: 0; }
 .editor-corpo { margin-top: clamp(40px, 5vw, 72px); display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(32px, 5vw, 88px); align-items: start; }
 .editor-anteprima { margin: 0; position: sticky; top: 96px; }
 .editor-anteprima canvas { width: 100%; aspect-ratio: 1; background: var(--fondo); border-radius: 28px; touch-action: manipulation; }
@@ -193,68 +194,6 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .strumento:hover { box-shadow: inset 0 0 0 1.5px var(--inchiostro); background: var(--fondo); }
 .editor-azioni { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
 .nota { margin-top: 14px; min-height: 1.6em; color: var(--tenue); font-size: .95rem; }
-
-/* Gioco */
-.gioco-corpo { margin-top: clamp(40px, 5vw, 72px); display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(28px, 4vw, 72px); align-items: center; }
-.gioco-lavoro { position: relative; border-radius: 28px; background: var(--superficie); overflow: hidden; }
-.gioco-lavoro canvas { width: 100%; aspect-ratio: 4 / 3; touch-action: manipulation; cursor: pointer; }
-.gioco-uncinetto {
-  position: absolute; left: 0; top: 0; width: 26px; height: 150px; margin-left: -6px; margin-top: -8px;
-  transform-origin: 0 0; pointer-events: none; opacity: 0;
-  transition: transform .35s var(--curva), opacity .3s ease;
-}
-.in-gioco .gioco-uncinetto { opacity: 1; }
-.gioco-uncinetto.affonda { animation: affonda .28s var(--curva); }
-@keyframes affonda { 40% { margin-top: 6px; rotate: -14deg; } }
-.gioco-schermo {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(380px, calc(100% - 32px));
-  display: grid; justify-items: center; gap: 12px; text-align: center; padding: 28px 24px;
-  background: var(--fondo); border-radius: 24px; animation: compare .5s var(--curva);
-}
-@keyframes compare { from { opacity: 0; transform: translate(-50%, -44%) scale(.96); } }
-.gioco-schermo[hidden] { display: none; }
-.gioco-schermo-titolo { font: 350 clamp(1.8rem, 3vw, 2.6rem) / 1.05 var(--serif); letter-spacing: -0.02em; }
-.gioco-schermo p:not(.gioco-schermo-titolo) { color: var(--tenue); }
-.fili { display: flex; gap: 10px; margin: 6px 0 8px; }
-.filo-scelta {
-  width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
-  background: conic-gradient(var(--a) 0 50%, var(--b) 50% 100%);
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); transition: transform .3s var(--curva);
-}
-.filo-scelta:hover { transform: scale(1.1); }
-.filo-scelta[aria-pressed="true"] { outline: 1.5px solid var(--inchiostro); outline-offset: 4px; }
-.gioco-record { font-size: .9rem; }
-.gioco-hud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 0 0 28px; }
-.gioco-hud p { display: grid; gap: 4px; }
-.gioco-etichetta { color: var(--tenue); font-size: .9rem; }
-.gioco-numero { font: 350 clamp(1.8rem, 3vw, 2.6rem) / 1 var(--serif); font-variant-numeric: tabular-nums; }
-.gioco-vite { display: flex; gap: 6px; height: clamp(1.8rem, 3vw, 2.6rem); align-items: center; }
-.gioco-vite svg { width: 26px; height: 26px; fill: var(--accento); transition: transform .5s var(--curva), opacity .5s ease; }
-.gioco-vite svg.perso { opacity: .2; transform: scale(.6) rotate(-90deg); }
-.gioco-barra { position: relative; height: 56px; border-radius: 999px; background: var(--superficie); overflow: hidden; }
-.gioco-barra.scossa { animation: scossa .4s ease; }
-@keyframes scossa { 20%, 60% { translate: -8px 0; } 40%, 80% { translate: 8px 0; } }
-.gioco-zona { position: absolute; top: 0; bottom: 0; left: 0; background: #fff; transition: transform .35s var(--curva), width .35s var(--curva); }
-.gioco-zona::after { content: ""; position: absolute; top: 0; bottom: 0; left: 30%; right: 30%; background: color-mix(in srgb, var(--accento) 24%, #fff); }
-.gioco-segno { position: absolute; top: 8px; bottom: 8px; left: 0; width: 4px; margin-left: -2px; border-radius: 4px; background: var(--inchiostro); will-change: transform; }
-.gioco-fumetto {
-  position: absolute; z-index: 2; pointer-events: none; transform: translate(-50%, 0);
-  font: 500 1.05rem var(--sans); color: var(--inchiostro); animation: sale .9s var(--curva) forwards;
-}
-@keyframes sale { from { opacity: 0; transform: translate(-50%, 8px) scale(.7); } 25% { opacity: 1; transform: translate(-50%, -6px) scale(1.1); } to { opacity: 0; transform: translate(-50%, -46px) scale(1); } }
-.gioco-coriandolo {
-  position: absolute; left: 50%; top: 55%; width: 10px; height: 10px; border-radius: 3px; background: var(--c); pointer-events: none;
-  animation: coriandolo 1.4s cubic-bezier(.2, .7, .4, 1) forwards;
-}
-@keyframes coriandolo {
-  0% { transform: translate(0, 0) rotate(0) scale(.4); opacity: 1; }
-  60% { opacity: 1; }
-  100% { transform: translate(var(--x), calc(var(--y) + 260px)) rotate(var(--r)) scale(1); opacity: 0; }
-}
-.gioco-lavoro.festa canvas { animation: battito .9s var(--curva) 2; }
-@keyframes battito { 0%, 100% { transform: scale(1); } 30% { transform: scale(1.08); } 55% { transform: scale(.98); } }
-.gioco-punto { width: 100%; margin-top: 18px; min-height: 64px; font-size: 1.1rem; touch-action: manipulation; user-select: none; }
-.gioco-messaggio { margin-top: 14px; min-height: 1.6em; color: var(--tenue); }
 
 /* Come si ordina */
 .passi { margin-top: clamp(48px, 6vw, 80px); display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 64px); }
@@ -327,7 +266,7 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 @media (max-width: 960px) {
   .testata-nav { display: none; }
   .testata-ig { margin-left: auto; }
-  .hero, .editor-corpo, .gioco-corpo, .chi-sono { grid-template-columns: 1fr; }
+  .hero, .editor-corpo, .chi-sono { grid-template-columns: 1fr; }
   .hero { min-height: 0; }
   .hero-collage { max-width: 620px; width: 100%; justify-self: center; }
   .collezione { padding: clamp(88px, 11vw, 160px) 0; }
@@ -349,9 +288,31 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 }
 @media (max-width: 600px) {
   .segmenti { display: flex; }
-  .segmenti button { flex: 1; padding: 0 8px; }
-  .editor-azioni .bottone { width: 100%; }
-  .gioco-hud { margin-bottom: 20px; }
-  .gioco-lavoro canvas { aspect-ratio: 1; }
+  .segmenti button { flex: 1; min-width: 0; padding: 0 6px; min-height: 42px; font-size: .93rem; }
   .piede p { margin-left: 0; }
+
+  /* Editor su telefono: compatto, il disegno resta in vista mentre scegli */
+  .editor { padding-top: 64px; padding-bottom: 64px; }
+  .editor-testa .intro { font-size: 1rem; }
+  .editor-corpo { margin-top: 24px; gap: 18px; }
+  .testata-logo img { width: 88px; }
+  .editor-anteprima {
+    position: sticky; top: 70px; z-index: 5; max-width: none;
+    display: flex; align-items: center; gap: 12px;
+    margin: 0 calc(var(--margine) * -1); padding: 8px var(--margine) 10px;
+    background: var(--superficie);
+  }
+  .editor-anteprima canvas { width: min(42vw, 30svh); flex: none; border-radius: 18px; }
+  .editor-anteprima figcaption { margin: 0; font-size: .88rem; line-height: 1.4; }
+  .scelta { margin-bottom: 18px; }
+  .scelta legend { margin-bottom: 8px; font-size: .95rem; }
+  .campioni { gap: 8px; }
+  .campione { width: 34px; height: 34px; }
+  .campione[aria-checked="true"] { outline-offset: 3px; }
+  .zone { gap: 6px; }
+  .zona { min-height: 36px; font-size: .86rem; padding: 0 12px 0 7px; gap: 7px; }
+  .zona i { width: 18px; height: 18px; }
+  .strumenti { gap: 6px; margin-bottom: 20px; }
+  .strumento { min-height: 38px; padding: 0 14px; font-size: .88rem; }
+  .editor-azioni .bottone { width: 100%; }
 }

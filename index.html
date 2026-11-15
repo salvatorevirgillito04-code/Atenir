@@ -26,7 +26,6 @@
   <nav class="testata-nav" aria-label="Sezioni">
     <a href="#collezione">Collezione</a>
     <a href="#crea">Crea il tuo</a>
-    <a href="#gioco">Gioca</a>
     <a href="#chi-sono">Chi sono</a>
   </nav>
   <a class="testata-ig" data-link="instagram" href="#">Instagram</a>
@@ -163,45 +162,6 @@
     </div>
   </section>
 
-  <section class="gioco" id="gioco" aria-labelledby="titolo-gioco">
-    <div class="gioco-testa">
-      <h2 id="titolo-gioco">Lavora un cuoricino.</h2>
-      <p class="intro">Tredici maglie, mezzo minuto. Premi quando il segno passa nella zona chiara: al centro la maglia viene perfetta.</p>
-    </div>
-
-    <div class="gioco-corpo">
-      <div class="gioco-lavoro" id="gioco-lavoro">
-        <canvas id="gioco-tela" aria-label="Il tuo cuoricino all'uncinetto" role="img"></canvas>
-        <svg class="gioco-uncinetto" id="gioco-uncinetto" viewBox="0 0 24 140" aria-hidden="true">
-          <path d="M12 4c-5 0-6 7-2 9" fill="none" stroke="#c9cdd3" stroke-width="3" stroke-linecap="round"/>
-          <rect x="9.5" y="6" width="5" height="70" rx="2.5" fill="#c9cdd3"/>
-          <rect x="7" y="70" width="10" height="66" rx="5" fill="#3a6df0"/>
-        </svg>
-        <div class="gioco-schermo" id="gioco-schermo">
-          <p class="gioco-schermo-titolo" id="gioco-schermo-titolo">Scegli il filato</p>
-          <p id="gioco-schermo-testo">Il cuoricino viene a righe di due colori.</p>
-          <div class="fili" id="gioco-fili" aria-label="Filato"></div>
-          <button type="button" class="bottone" id="gioco-inizia">Inizia</button>
-          <p class="gioco-record" id="gioco-record"></p>
-        </div>
-      </div>
-
-      <div class="gioco-pannello">
-        <div class="gioco-hud">
-          <p><span class="gioco-etichetta">Punti</span><span class="gioco-numero" id="gioco-punti">0</span></p>
-          <p><span class="gioco-etichetta">Maglie</span><span class="gioco-numero" id="gioco-maglie">0/13</span></p>
-          <p><span class="gioco-etichetta">Gomitoli</span><span class="gioco-vite" id="gioco-vite"></span></p>
-        </div>
-        <div class="gioco-barra" id="gioco-barra">
-          <span class="gioco-zona" id="gioco-zona"></span>
-          <span class="gioco-segno" id="gioco-segno"></span>
-        </div>
-        <button type="button" class="bottone gioco-punto" id="gioco-punto" disabled>Fai la maglia</button>
-        <p class="gioco-messaggio" id="gioco-messaggio" aria-live="polite">Puoi anche toccare il disegno o usare la barra spaziatrice.</p>
-      </div>
-    </div>
-  </section>
-
   <section class="ordinare" id="ordinare" aria-labelledby="titolo-ordinare">
     <h2 id="titolo-ordinare">Come si ordina.</h2>
     <div class="passi">
@@ -256,6 +216,5 @@
 <script src="trama.js"></script>
 <script src="script.js"></script>
 <script src="editor.js"></script>
-<script src="gioco.js"></script>
 </body>
 </html>

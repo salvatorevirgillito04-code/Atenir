@@ -116,8 +116,8 @@ function suScroll() {
 function disegnaScroll() {
   const y = scrollY;
   const avanz = altezzaPagina > 0 ? Math.min(y / altezzaPagina, 1) : 0;
-  const x = avanz * larghezzaFilo;
-  filo.style.strokeDashoffset = (lunghezzaFilo * (1 - avanz)).toFixed(1);
+  const x = 18 + avanz * (larghezzaFilo - 36);
+  filo.style.strokeDashoffset = (lunghezzaFilo * (1 - x / larghezzaFilo)).toFixed(1);
   gomitolo.style.transform = `translate3d(${x.toFixed(1)}px,0,0) rotate(${(x / 16 * 57.3).toFixed(1)}deg) scale(${(1 - avanz * 0.3).toFixed(3)})`;
   if (moto && y < innerHeight * 1.2) collage.forEach((el) => { el.style.translate = `0 ${(y * +el.dataset.velocita).toFixed(1)}px`; });
   if (!distanza) return;
@@ -154,7 +154,7 @@ if (moto && "IntersectionObserver" in window) {
     osserva(t, "titolo-visibile");
   });
   // blocchi di testo in sequenza
-  document.querySelectorAll(".hero-sotto, .hero-azioni, .intro, .passo, .chi-sono-corpo > *, .segui p, .segui-handle, .editor-comandi > *, .gioco-pannello")
+  document.querySelectorAll(".hero-sotto, .hero-azioni, .intro, .passo, .chi-sono-corpo > *, .segui p, .segui-handle, .editor-comandi > *")
     .forEach((el) => {
       el.classList.add("entra");
       const fratelli = [...el.parentElement.children];
@@ -162,7 +162,7 @@ if (moto && "IntersectionObserver" in window) {
       osserva(el, "visibile");
     });
   // foto e tele: si aprono come una tenda
-  document.querySelectorAll(".collage-foto, .categoria-foto .foto, .editor-anteprima, .gioco-lavoro").forEach((el, i) => {
+  document.querySelectorAll(".collage-foto, .categoria-foto .foto, .editor-anteprima").forEach((el, i) => {
     el.classList.add("rivela");
     el.style.setProperty("--ritardo", `${(i % 3) * 0.12}s`);
     osserva(el, "visibile", "0%");
