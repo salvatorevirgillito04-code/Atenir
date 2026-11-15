@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atenir · Uncinetto fatto a mano</title>
+  <meta name="description" content="Atenir: berrette, sciarpotti e borsette all'uncinetto, fatti a mano uno alla volta. Scegli il colore e ordina su Instagram o WhatsApp.">
+  <meta property="og:title" content="Atenir · Uncinetto fatto a mano">
+  <meta property="og:description" content="Berrette, sciarpotti e borsette all'uncinetto, fatti a mano nei colori che scegli tu.">
+  <meta property="og:image" content="assets/logo.png">
+  <meta name="theme-color" content="#3a6df0">
+  <link rel="icon" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Disegni riutilizzati: il colore arriva da `color` (fill="currentColor") -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="acquerello" x="-10%" y="-30%" width="120%" height="160%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="4"/>
+      <feDisplacementMap in="SourceGraphic" scale="22"/>
+    </filter>
+  </defs>
+  <symbol id="berretta" viewBox="0 0 200 200">
+    <circle cx="100" cy="40" r="24" fill="currentColor" stroke="#6b0f0f" stroke-width="6"/>
+    <path d="M100 32c-6 4-10 4-14 2M104 46c6-2 10-1 13 3M90 50c-4-3-5-7-4-11" fill="none" stroke="#6b0f0f" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+    <path d="M28 142C26 82 62 58 100 58s74 24 72 84Z" fill="currentColor" stroke="#6b0f0f" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M70 72c-12 18-16 40-14 64M100 62v74M130 72c12 18 16 40 14 64" fill="none" stroke="#6b0f0f" stroke-width="3" stroke-linecap="round" opacity=".4"/>
+    <rect x="20" y="128" width="160" height="44" rx="20" fill="currentColor" stroke="#6b0f0f" stroke-width="6"/>
+    <path d="M42 136v28M60 136v28M78 136v28M96 136v28M114 136v28M132 136v28M150 136v28" stroke="#6b0f0f" stroke-width="3.5" stroke-linecap="round" opacity=".45"/>
+  </symbol>
+  <symbol id="sciarpotto" viewBox="0 0 200 200">
+    <path d="M118 74l34-2-8 92-34-4Z" fill="currentColor" stroke="#6b0f0f" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M117 96l33-1M115 118l33 1M113 140l32 2" stroke="#6b0f0f" stroke-width="3.5" stroke-linecap="round" opacity=".45"/>
+    <path d="M114 162l-3 22M124 163l-2 22M134 164l-1 22M143 165l1 21" stroke="#6b0f0f" stroke-width="4.5" stroke-linecap="round"/>
+    <path d="M34 60c40-30 92-30 132 0l-10 34c-36-24-76-24-112 0Z" fill="currentColor" stroke="#6b0f0f" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M58 54c-2 12-2 22 0 30M84 46c-2 12-2 24 0 34M112 46c2 12 2 24 0 34M140 54c2 12 2 22 0 30" stroke="#6b0f0f" stroke-width="3.5" stroke-linecap="round" opacity=".45"/>
+    <path d="M62 86l-24 70 30 6 22-64Z" fill="currentColor" stroke="#6b0f0f" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M52 116l28 4M45 138l28 5" stroke="#6b0f0f" stroke-width="3.5" stroke-linecap="round" opacity=".45"/>
+    <path d="M40 158l-6 20M50 160l-5 21M60 162l-4 20" stroke="#6b0f0f" stroke-width="4.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="borsetta" viewBox="0 0 200 200">
+    <path d="M66 84C62 30 138 30 134 84" fill="none" stroke="#6b0f0f" stroke-width="18" stroke-linecap="round"/>
+    <path d="M66 84C62 30 138 30 134 84" fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+    <path d="M30 82h140c6 56-14 96-70 96S24 138 30 82Z" fill="currentColor" stroke="#6b0f0f" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M44 106q8-8 16 0t16 0 16 0 16 0 16 0 16 0 16 0M44 128q8-8 16 0t16 0 16 0 16 0 16 0 16 0 16 0M50 150q8-8 16 0t16 0 16 0 16 0 16 0 16 0" fill="none" stroke="#6b0f0f" stroke-width="3" stroke-linecap="round" opacity=".45"/>
+    <circle cx="100" cy="90" r="9" fill="#fdbe58" stroke="#6b0f0f" stroke-width="4"/>
+  </symbol>
+  <symbol id="raggi" viewBox="0 0 120 120">
+    <path d="M18 70 6 40M44 58 42 8M66 66 92 28M10 92l-6 2" stroke="#f5a623" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </symbol>
+</svg>
+
+<header class="testata">
+  <a class="testata-logo" href="#inizio" aria-label="Atenir, torna all'inizio">
+    <img src="assets/logo-sm.png" alt="Atenir" width="160" height="86">
+  </a>
+  <nav class="testata-nav" aria-label="Sezioni">
+    <a href="#collezione">Collezione</a>
+    <a href="#crea">Crea il tuo</a>
+    <a href="#ordinare">Come ordinare</a>
+    <a href="#chi-sono">Chi sono</a>
+  </nav>
+  <a class="bottone bottone-piccolo" data-link="instagram" href="#">Instagram</a>
+</header>
+
+<main id="inizio">
+
+  <section class="hero" aria-labelledby="titolo-hero">
+    <div class="hero-testo">
+      <h1 id="titolo-hero">Uncinetto fatto a mano, un punto alla volta.</h1>
+      <p class="hero-sotto">Berrette, sciarpotti e borsette che nascono uno per uno, nei colori che scegli tu. Niente magazzino: ogni pezzo è fatto per chi lo indossa.</p>
+      <div class="hero-azioni">
+        <a class="bottone" href="#crea">Scegli i tuoi colori</a>
+        <a class="link-sottolineato" href="#collezione">Guarda la collezione</a>
+      </div>
+    </div>
+    <div class="hero-figura" aria-hidden="true">
+      <div class="pennellata"></div>
+      <svg class="raggi raggi-a"><use href="#raggi"/></svg>
+      <svg class="raggi raggi-b"><use href="#raggi"/></svg>
+      <svg class="hero-pezzo pezzo-berretta" style="color:var(--rosso)"><use href="#berretta"/></svg>
+      <svg class="hero-pezzo pezzo-borsetta" style="color:var(--giallo)"><use href="#borsetta"/></svg>
+      <svg class="hero-pezzo pezzo-sciarpotto" style="color:var(--verde)"><use href="#sciarpotto"/></svg>
+    </div>
+  </section>
+
+  <section class="collezione" id="collezione" aria-labelledby="titolo-collezione">
+    <h2 id="titolo-collezione">Tre cose, fatte bene.</h2>
+    <p class="intro">Ogni pezzo prende il colore di una lettera del logo. Poi puoi cambiarlo come vuoi.</p>
+
+    <div class="prodotti">
+      <article class="prodotto" style="--tinta:var(--rosso)">
+        <div class="prodotto-figura"><svg style="color:#fff6e6" role="img" aria-label="Disegno di una berretta all'uncinetto"><use href="#berretta"/></svg></div>
+        <h3>Berrette</h3>
+        <p>Morbide, con il risvolto a coste e il pompon se lo vuoi. Lana calda per l'inverno, cotone per le mezze stagioni.</p>
+        <a class="link-sottolineato" href="#crea" data-scegli="berretta">Fai la tua berretta</a>
+      </article>
+      <article class="prodotto" style="--tinta:var(--verde)">
+        <div class="prodotto-figura"><svg style="color:var(--giallo)" role="img" aria-label="Disegno di uno sciarpotto all'uncinetto"><use href="#sciarpotto"/></svg></div>
+        <h3>Sciarpotti</h3>
+        <p>Grandi, avvolgenti, con le frange. Uno di quelli che ti tieni addosso anche in casa.</p>
+        <a class="link-sottolineato" href="#crea" data-scegli="sciarpotto">Fai il tuo sciarpotto</a>
+      </article>
+      <article class="prodotto" style="--tinta:var(--giallo)">
+        <div class="prodotto-figura"><svg style="color:var(--rosso)" role="img" aria-label="Disegno di una borsetta all'uncinetto"><use href="#borsetta"/></svg></div>
+        <h3>Borsette</h3>
+        <p>Piccole e resistenti, con il manico intrecciato e il bottone. Ci stanno telefono, chiavi e poco altro: il giusto.</p>
+        <a class="link-sottolineato" href="#crea" data-scegli="borsetta">Fai la tua borsetta</a>
+      </article>
+    </div>
+  </section>
+
+  <section class="crea" id="crea" aria-labelledby="titolo-crea">
+    <div class="crea-testo">
+      <h2 id="titolo-crea">Scegli pezzo e colore.</h2>
+      <p class="intro">Prova le combinazioni qui sotto. Quando ti piace, mandami la richiesta: il messaggio è già scritto.</p>
+
+      <fieldset class="scelta">
+        <legend>Pezzo</legend>
+        <div class="scelta-pezzi" role="radiogroup">
+          <button type="button" class="chip" role="radio" aria-checked="true" data-pezzo="berretta">Berretta</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-pezzo="sciarpotto">Sciarpotto</button>
+          <button type="button" class="chip" role="radio" aria-checked="false" data-pezzo="borsetta">Borsetta</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="scelta">
+        <legend>Colore</legend>
+        <div class="scelta-colori" role="radiogroup" id="colori"></div>
+      </fieldset>
+
+      <div class="crea-azioni">
+        <a class="bottone" id="ordina-instagram" href="#">Chiedi su Instagram</a>
+        <a class="bottone bottone-chiaro" id="ordina-whatsapp" href="#">Chiedi su WhatsApp</a>
+      </div>
+      <p class="nota" id="nota-copia" aria-live="polite"></p>
+    </div>
+
+    <div class="crea-anteprima">
+      <div class="pennellata pennellata-piccola"></div>
+      <svg id="anteprima" class="anteprima-svg" style="color:var(--rosso)" role="img" aria-labelledby="etichetta-anteprima"><use href="#berretta"/></svg>
+      <p class="etichetta" id="etichetta-anteprima">Berretta · Rosso papavero</p>
+    </div>
+  </section>
+
+  <section class="ordinare" id="ordinare" aria-labelledby="titolo-ordinare">
+    <h2 id="titolo-ordinare">Come si ordina.</h2>
+    <ol class="passi">
+      <li style="--tinta:var(--arancio)">
+        <h3>Scegli</h3>
+        <p>Pezzo e colore qui sopra, oppure prendi spunto dai lavori su Instagram.</p>
+      </li>
+      <li style="--tinta:var(--cielo)">
+        <h3>Scrivimi</h3>
+        <p>In messaggio privato ci accordiamo su misura, filato, prezzo e tempi.</p>
+      </li>
+      <li style="--tinta:var(--viola)">
+        <h3>Lo ricevi</h3>
+        <p>Lo lavoro a mano e te lo spedisco, oppure ci vediamo per la consegna.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section class="chi-sono" id="chi-sono" aria-labelledby="titolo-chi-sono">
+    <div class="chi-sono-figura" aria-hidden="true">
+      <img src="assets/logo.png" alt="" width="1247" height="667">
+    </div>
+    <div class="chi-sono-testo">
+      <h2 id="titolo-chi-sono">Dietro Atenir ci sono io.</h2>
+      <p>Ho iniziato con un gomitolo e un tutorial, e non ho più smesso. Atenir è il mio piccolo laboratorio: ogni lettera del logo ha un colore diverso, come i gomitoli sparsi sulla mia scrivania.</p>
+      <p>Lavoro da sola e su ordinazione, quindi ogni pezzo è un po' diverso dall'altro. È proprio questo il bello.</p>
+    </div>
+  </section>
+
+  <section class="segui" aria-labelledby="titolo-segui">
+    <h2 id="titolo-segui">Segui i lavori in corso.</h2>
+    <p>Su Instagram e TikTok trovi i pezzi appena finiti, i colori nuovi e i video dei punti.</p>
+    <div class="segui-azioni">
+      <a class="bottone bottone-bianco" data-link="instagram" href="#">Instagram</a>
+      <a class="bottone bottone-bianco" data-link="tiktok" href="#">TikTok</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="piede">
+  <img src="assets/logo-sm.png" alt="Atenir" width="200" height="107">
+  <p>Uncinetto fatto a mano in Italia.</p>
+  <nav aria-label="Contatti">
+    <a data-link="instagram" href="#">Instagram</a>
+    <a data-link="tiktok" href="#">TikTok</a>
+    <a data-link="whatsapp" href="#">WhatsApp</a>
+    <a data-link="email" href="#">Email</a>
+  </nav>
+  <p class="piede-firma">© <span id="anno">2026</span> Atenir</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
