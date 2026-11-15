@@ -118,3 +118,110 @@ if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: re
   }, { rootMargin: "0px 0px -8% 0px" });
   daAnimare.forEach((el) => oss.observe(el));
 }
+
+// ===== Animazioni moderne =====
+const moto = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+const puntatoreFine = matchMedia("(pointer: fine)").matches;
+
+// Titoli divisi in parole che salgono una alla volta
+document.querySelectorAll("h1, section h2").forEach((t) => {
+  t.classList.remove("entra");
+  t.innerHTML = t.textContent.trim().split(/\s+/)
+    .map((p, i) => `<span class="parola"><span style="--i:${i}">${p}</span></span>`).join(" ");
+  if (!moto || !("IntersectionObserver" in window)) { t.classList.add("titolo-visibile"); return; }
+  new IntersectionObserver((v, o) => {
+    if (v[0].isIntersecting) { t.classList.add("titolo-visibile"); o.disconnect(); }
+  }, { rootMargin: "0px 0px -10% 0px" }).observe(t);
+});
+
+// Filo di lana: onda che si disegna con lo scroll, gomitolo che rotola
+const filo = document.getElementById("filo-path");
+const filoSvg = filo.ownerSVGElement;
+const gomitolo = document.querySelector(".gomitolo");
+let lunghezza = 0, larghezza = 0;
+function disegnaFilo() {
+  larghezza = filoSvg.clientWidth;
+  filoSvg.setAttribute("viewBox", `0 0 ${larghezza} 24`);
+  let d = "M0 12";
+  for (let x = 0, i = 0; x < larghezza; x += 26, i++) d += ` Q${x + 13} ${i % 2 ? 20 : 4} ${x + 26} 12`;
+  filo.setAttribute("d", d);
+  lunghezza = filo.getTotalLength();
+  filo.style.strokeDasharray = lunghezza;
+}
+disegnaFilo();
+
+let ultimoY = scrollY, velocita = 0;
+function suScroll() {
+  const max = document.documentElement.scrollHeight - innerHeight;
+  const p = max > 0 ? Math.min(scrollY / max, 1) : 0;
+  filo.style.strokeDashoffset = lunghezza * (1 - p);
+  gomitolo.style.transform = `translateX(${p * larghezza}px) rotate(${p * 1440}deg) scale(${1 - p * 0.45})`;
+  velocita = scrollY - ultimoY; ultimoY = scrollY;
+}
+addEventListener("scroll", suScroll, { passive: true });
+addEventListener("resize", () => { disegnaFilo(); suScroll(); });
+suScroll();
+
+// Nastro: accelera e cambia verso seguendo lo scroll
+const nastro = document.querySelector(".nastro-traccia");
+if (moto && nastro.getAnimations) {
+  let vel = 1;
+  (function ciclo() {
+    const anim = nastro.getAnimations()[0];
+    const obiettivo = 1 + Math.min(Math.abs(velocita) / 6, 6) * Math.sign(velocita || 1);
+    vel += (obiettivo - vel) * 0.08;
+    if (anim) anim.playbackRate = vel;
+    velocita *= 0.9;
+    requestAnimationFrame(ciclo);
+  })();
+}
+
+if (moto && puntatoreFine) {
+  // Schede 3D
+  document.querySelectorAll(".prodotto-figura").forEach((f) => {
+    f.addEventListener("pointermove", (e) => {
+      const r = f.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+      f.style.transform = `perspective(700px) rotateX(${-y * 14}deg) rotateY(${x * 16}deg) scale(1.03)`;
+      f.style.setProperty("--px", `${x * 18}px`);
+      f.style.setProperty("--py", `${y * 18}px`);
+    });
+    f.addEventListener("pointerleave", () => {
+      f.style.transform = ""; f.style.setProperty("--px", "0px"); f.style.setProperty("--py", "0px");
+    });
+  });
+
+  // Bottoni magnetici
+  document.querySelectorAll(".bottone").forEach((b) => {
+    b.addEventListener("pointermove", (e) => {
+      const r = b.getBoundingClientRect();
+      b.style.translate = `${(e.clientX - r.left - r.width / 2) * 0.25}px ${(e.clientY - r.top - r.height / 2) * 0.35}px`;
+    });
+    b.addEventListener("pointerleave", () => { b.style.translate = "0 0"; });
+  });
+
+  // Hero: i pezzi seguono il mouse a profondità diverse
+  const hero = document.querySelector(".hero");
+  const pezzi = [...document.querySelectorAll(".hero-pezzo, .hero .raggi, .hero .pennellata")];
+  const profondita = [28, -22, 16, 40, -36, 8];
+  hero.addEventListener("pointermove", (e) => {
+    const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
+    pezzi.forEach((el, i) => { el.style.translate = `${x * profondita[i]}px ${y * profondita[i]}px`; });
+  });
+}
+
+// Configuratore: schizzo di colore e sfondo tinto a ogni scelta
+const schizzo = document.getElementById("schizzo");
+const sezioneCrea = document.querySelector(".crea");
+const aggiornaBase = aggiorna;
+aggiorna = function () {
+  aggiornaBase();
+  sezioneCrea.style.setProperty("--colore-scelto", stato.colore.valore);
+  if (moto && schizzo.animate) {
+    schizzo.animate(
+      [{ transform: "scale(.2)", opacity: .55 }, { transform: "scale(1.15)", opacity: 0 }],
+      { duration: 700, easing: "cubic-bezier(.2,.8,.3,1)" }
+    );
+  }
+};
+sezioneCrea.style.setProperty("--colore-scelto", stato.colore.valore);

@@ -18,7 +18,7 @@
 }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+html { overflow-x: clip; scroll-behavior: smooth; scroll-padding-top: 96px; }
 body {
   margin: 0;
   background: var(--fondo);
@@ -27,6 +27,7 @@ body {
   font-size: 1.125rem;
   line-height: 1.6;
   overflow-x: hidden;
+  overflow-x: clip;
 }
 img, svg { display: block; max-width: 100%; }
 h1, h2, h3 {
@@ -252,4 +253,45 @@ a:focus-visible, button:focus-visible { outline: 4px solid var(--raggio); outlin
   .passi li:nth-child(n) { transform: none; }
   .campione { width: 46px; height: 46px; }
   .crea-azioni .bottone { width: 100%; }
+}
+
+/* ===== Animazioni moderne ===== */
+
+/* Filo di lana: si srotola mentre scorri, il gomitolo rotola */
+.testata { position: sticky; }
+.filo { position: absolute; left: 0; right: 0; bottom: -10px; height: 24px; pointer-events: none; }
+.filo-svg { width: 100%; height: 100%; overflow: visible; }
+.filo-svg { display: block; }
+.filo-svg path { fill: none; stroke: var(--rosso); stroke-width: 3.5; stroke-linecap: round; }
+.gomitolo { position: absolute; top: -4px; left: 0; width: 30px; height: 30px; margin-left: -15px; will-change: transform; }
+
+/* Titoli: le parole salgono una dopo l'altra con un rimbalzo */
+.parola { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
+.parola > span { display: inline-block; transform: translateY(105%) rotate(8deg); transform-origin: left bottom;
+  transition: transform .8s cubic-bezier(.2, 1.4, .4, 1); transition-delay: calc(var(--i) * 70ms); }
+.titolo-visibile .parola > span { transform: none; }
+
+/* Nastro scorrevole con le parole colorate come il logo */
+.nastro { overflow: hidden; background: var(--blu); border-block: var(--bordo); padding: 18px 0; transform: rotate(-2deg); margin: 0 -2%; }
+.nastro-traccia { display: flex; width: max-content; animation: scorri 32s linear infinite; }
+.nastro-gruppo { display: flex; align-items: center; gap: 32px; padding-right: 32px; }
+.nastro span { font: 700 clamp(1.8rem, 4vw, 3rem) var(--titolo); color: var(--t); -webkit-text-stroke: 2px var(--contorno); paint-order: stroke fill; white-space: nowrap; }
+.nastro .stella { width: 40px; height: 40px; flex: none; }
+@keyframes scorri { to { transform: translateX(-50%); } }
+
+/* Schede che si inclinano in 3D sotto il mouse */
+.prodotto-figura { transform-style: preserve-3d; transition: transform .5s cubic-bezier(.2, .9, .3, 1); will-change: transform; }
+.prodotto-figura svg { translate: var(--px, 0) var(--py, 0); }
+
+/* Configuratore: lo sfondo prende il colore scelto e parte uno schizzo */
+.crea { background: color-mix(in srgb, var(--colore-scelto, #3a6df0) 13%, #fff); transition: background-color .6s ease; }
+.schizzo { position: absolute; inset: 8%; border-radius: 50%; background: var(--colore-scelto); opacity: 0; pointer-events: none; filter: url(#acquerello); }
+
+/* Bottoni magnetici */
+.bottone { transition: transform .18s ease, translate .3s cubic-bezier(.2, 1.4, .4, 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .parola > span { transform: none; transition: none; }
+  .nastro-traccia { animation: none; }
+  .gomitolo { display: none; }
 }
