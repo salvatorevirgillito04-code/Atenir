@@ -1,25 +1,30 @@
-// ===== Da completare: i tuoi contatti =====
-// Scrivi qui il nome utente e il numero, il resto del sito si aggiorna da solo.
+// ===== I tuoi contatti =====
+// Lascia vuoto ("") quello che non vuoi mostrare: sparisce dal sito.
 const CONTATTI = {
   instagram: "atenir_handmade", // nome utente Instagram, senza @
-  tiktok: "",                   // nome utente TikTok, senza @ (vuoto = nascosto)
-  whatsapp: "",                 // numero con prefisso, solo cifre, es. 393331234567 (vuoto = nascosto)
-  email: "",                    // indirizzo email (vuoto = nascosto)
+  tiktok: "",                   // nome utente TikTok, senza @
+  whatsapp: "",                 // numero con prefisso, solo cifre, es. 393331234567
+  email: "",                    // indirizzo email
 };
-// ==========================================
+// ===========================
 
 const COLORI = [
-  { nome: "Rosso papavero", valore: "#c0302f" },
-  { nome: "Ruggine", valore: "#c67a48" },
-  { nome: "Girasole", valore: "#fdbe58" },
-  { nome: "Salvia", valore: "#5a994b" },
-  { nome: "Cielo", valore: "#6e9ac9" },
-  { nome: "Viola", valore: "#5e1ae8" },
+  { nome: "Rosso papavero", valore: "#b8322f" },
+  { nome: "Ruggine", valore: "#c47a4a" },
+  { nome: "Girasole", valore: "#e9ae45" },
+  { nome: "Salvia", valore: "#5f9a50" },
+  { nome: "Cielo", valore: "#7ea3cf" },
+  { nome: "Viola", valore: "#6a3be0" },
   { nome: "Blu Atenir", valore: "#3a6df0" },
-  { nome: "Panna", valore: "#fff6e6" },
+  { nome: "Panna", valore: "#ece4d6" },
+  { nome: "Grigio melange", valore: "#9a9894" },
+  { nome: "Antracite", valore: "#3b3b3d" },
 ];
 const NOMI_PEZZI = { berretta: "Berretta", sciarpotto: "Sciarpotto", borsetta: "Borsetta" };
+const moto = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+const puntatoreFine = matchMedia("(pointer: fine)").matches;
 
+// ----- Contatti -----
 const link = {
   instagram: `https://instagram.com/${CONTATTI.instagram}`,
   instagramDm: `https://ig.me/m/${CONTATTI.instagram}`,
@@ -27,23 +32,79 @@ const link = {
   whatsapp: `https://wa.me/${CONTATTI.whatsapp}`,
   email: `mailto:${CONTATTI.email}`,
 };
-
 document.querySelectorAll("[data-link]").forEach((a) => {
   if (!CONTATTI[a.dataset.link]) { a.remove(); return; }
   a.href = link[a.dataset.link];
-  if (!a.href.startsWith("mailto:")) { a.target = "_blank"; a.rel = "noopener"; }
+  if (a.dataset.link !== "email") { a.target = "_blank"; a.rel = "noopener"; }
 });
 document.getElementById("anno").textContent = new Date().getFullYear();
 
-// ----- Crea il tuo -----
+// ----- Trame di maglia -----
+const maglie = new Map();
+document.querySelectorAll("canvas.maglia").forEach((c) => maglie.set(c, new Maglia(c)));
+maglie.forEach((m) => m.disegna());
+
+// Foto vere: se esiste assets/foto/<pezzo>.jpg prende il posto del disegno
+document.querySelectorAll("[data-foto]").forEach((fig) => {
+  const img = new Image();
+  img.onload = () => {
+    img.alt = fig.querySelector("canvas").getAttribute("aria-label") || "";
+    fig.replaceChildren(img);
+  };
+  img.src = fig.dataset.foto;
+});
+
+// La maglia si forma riga dopo riga quando entra in vista
+if ("IntersectionObserver" in window) {
+  const oss = new IntersectionObserver((voci) => {
+    voci.forEach((v) => {
+      if (!v.isIntersecting) return;
+      const m = maglie.get(v.target);
+      if (m && !m.lavorata) { m.lavorata = true; m.lavora(v.target.id === "maglia-hero" ? 1800 : 1300); }
+      oss.unobserve(v.target);
+    });
+  }, { threshold: 0.25 });
+  maglie.forEach((m, c) => { if (moto) { m.ctx.clearRect(0, 0, c.width, c.height); oss.observe(c); } });
+}
+
+// Hero: il telo cambia colore da solo, ogni pochi secondi
+const hero = maglie.get(document.getElementById("maglia-hero"));
+const nomeHero = document.getElementById("hero-nome-colore");
+const giroHero = ["Blu Atenir", "Rosso papavero", "Girasole", "Salvia", "Antracite", "Viola", "Ruggine", "Cielo"]
+  .map((n) => COLORI.find((c) => c.nome === n));
+let indiceHero = 0, heroVisibile = true;
+new IntersectionObserver((v) => { heroVisibile = v[0].isIntersecting; }).observe(hero.canvas);
+if (moto) {
+  setInterval(() => {
+    if (!heroVisibile || document.hidden) return;
+    indiceHero = (indiceHero + 1) % giroHero.length;
+    const c = giroHero[indiceHero];
+    hero.imposta({ colore: c.valore, durata: 1300 });
+    nomeHero.textContent = c.nome;
+  }, 4200);
+}
+
+// ----- Nastro -----
+const parole = ["Berrette", "Sciarpotti", "Borsette", "Fatto a mano", "Su ordinazione", "Colori a scelta"];
+const puntini = ["#b8322f", "#c47a4a", "#e9ae45", "#5f9a50", "#7ea3cf", "#6a3be0"];
+const gruppo = parole.map((p, i) => `<span>${p}</span><i style="--c:${puntini[i]}"></i>`).join("");
+document.getElementById("nastro").innerHTML = `<div class="nastro-gruppo">${gruppo}</div><div class="nastro-gruppo">${gruppo}</div>`;
+
+// ----- Configuratore -----
 const stato = { pezzo: "berretta", colore: COLORI[0] };
-const anteprima = document.getElementById("anteprima");
+const anteprima = maglie.get(document.getElementById("maglia-crea"));
 const etichetta = document.getElementById("etichetta-anteprima");
+const nomeColore = document.getElementById("nome-colore");
 const contenitoreColori = document.getElementById("colori");
-const bottoniPezzo = document.querySelectorAll("[data-pezzo]");
+const segmenti = document.querySelector(".segmenti");
+const bottoniPezzo = segmenti.querySelectorAll("[data-pezzo]");
 const ordinaIg = document.getElementById("ordina-instagram");
 const ordinaWa = document.getElementById("ordina-whatsapp");
 const nota = document.getElementById("nota-copia");
+
+const cursore = document.createElement("span");
+cursore.className = "cursore";
+segmenti.prepend(cursore);
 
 COLORI.forEach((c, i) => {
   const b = document.createElement("button");
@@ -57,37 +118,37 @@ COLORI.forEach((c, i) => {
   b.addEventListener("click", () => { stato.colore = c; aggiorna(); });
   contenitoreColori.appendChild(b);
 });
-
-bottoniPezzo.forEach((b) =>
-  b.addEventListener("click", () => { stato.pezzo = b.dataset.pezzo; aggiorna(); })
-);
-
+bottoniPezzo.forEach((b) => b.addEventListener("click", () => { stato.pezzo = b.dataset.pezzo; aggiorna(); }));
 document.querySelectorAll("[data-scegli]").forEach((a) =>
   a.addEventListener("click", () => { stato.pezzo = a.dataset.scegli; aggiorna(); })
 );
 
 function messaggio() {
-  return `Ciao! Ho visto il sito di Atenir e vorrei una ${NOMI_PEZZI[stato.pezzo].toLowerCase()} color ${stato.colore.nome.toLowerCase()}. Mi dici prezzo e tempi?`
-    .replace("una sciarpotto", "uno sciarpotto");
+  const pezzo = stato.pezzo === "sciarpotto" ? "uno sciarpotto" : `una ${stato.pezzo}`;
+  return `Ciao! Ho visto il sito di Atenir e vorrei ${pezzo} color ${stato.colore.nome.toLowerCase()}. Mi dici prezzo e tempi?`;
 }
 
-function aggiorna() {
-  anteprima.querySelector("use").setAttribute("href", `#${stato.pezzo}`);
-  anteprima.style.color = stato.colore.valore;
-  anteprima.classList.remove("cambia");
-  void anteprima.offsetWidth;
-  anteprima.classList.add("cambia");
-  etichetta.textContent = `${NOMI_PEZZI[stato.pezzo]} · ${stato.colore.nome}`;
+function muoviCursore() {
+  const attivo = segmenti.querySelector('[aria-checked="true"]');
+  cursore.style.width = `${attivo.offsetWidth}px`;
+  cursore.style.transform = `translateX(${attivo.offsetLeft}px)`;
+}
 
+function aggiorna(prima = false) {
+  if (!prima) anteprima.imposta({ colore: stato.colore.valore, forma: stato.pezzo, durata: 800 });
+  etichetta.textContent = `${NOMI_PEZZI[stato.pezzo]}, ${stato.colore.nome}`;
+  nomeColore.textContent = stato.colore.nome;
   bottoniPezzo.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.pezzo === stato.pezzo)));
   contenitoreColori.querySelectorAll(".campione").forEach((b) =>
     b.setAttribute("aria-checked", String(b.getAttribute("aria-label") === stato.colore.nome))
   );
-
-  ordinaWa.href = `${link.whatsapp}?text=${encodeURIComponent(messaggio())}`;
+  muoviCursore();
+  if (CONTATTI.whatsapp) ordinaWa.href = `${link.whatsapp}?text=${encodeURIComponent(messaggio())}`;
   ordinaIg.href = link.instagramDm;
   nota.textContent = "";
 }
+addEventListener("resize", muoviCursore);
+document.fonts?.ready.then(muoviCursore);
 
 if (!CONTATTI.whatsapp) ordinaWa.remove();
 [ordinaIg, ordinaWa].forEach((a) => { a.target = "_blank"; a.rel = "noopener"; });
@@ -101,77 +162,57 @@ ordinaIg.addEventListener("click", async () => {
     nota.textContent = `Scrivimi: "${messaggio()}"`;
   }
 });
+aggiorna(true);
 
-aggiorna();
-anteprima.classList.remove("cambia");
-
-// ----- Entrate in scena allo scroll -----
-const daAnimare = document.querySelectorAll(
-  ".hero-testo > *, section h2, .intro, .prodotto, .passi li, .chi-sono-testo p, .segui p, .segui-azioni"
-);
-if ("IntersectionObserver" in window && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  daAnimare.forEach((el) => {
-    el.classList.add("entra");
-    const fratelli = [...el.parentElement.children];
-    el.style.setProperty("--ritardo", `${Math.min(fratelli.indexOf(el), 4) * 0.08}s`);
-  });
-  const oss = new IntersectionObserver((voci) => {
-    voci.forEach((v) => { if (v.isIntersecting) { v.target.classList.add("visibile"); oss.unobserve(v.target); } });
-  }, { rootMargin: "0px 0px -8% 0px" });
-  daAnimare.forEach((el) => oss.observe(el));
-}
-
-// ===== Animazioni moderne =====
-const moto = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-const puntatoreFine = matchMedia("(pointer: fine)").matches;
-
-// Titoli divisi in parole che salgono una alla volta
-document.querySelectorAll("h1, section h2").forEach((t) => {
-  t.classList.remove("entra");
-  t.innerHTML = t.textContent.trim().split(/\s+/)
-    .map((p, i) => `<span class="parola"><span style="--i:${i}">${p}</span></span>`).join(" ");
-  if (!moto || !("IntersectionObserver" in window)) { t.classList.add("titolo-visibile"); return; }
-  new IntersectionObserver((v, o) => {
-    if (v[0].isIntersecting) { t.classList.add("titolo-visibile"); o.disconnect(); }
-  }, { rootMargin: "0px 0px -10% 0px" }).observe(t);
-});
-
-// Filo di lana: onda che si disegna con lo scroll, gomitolo che rotola
-const filo = document.getElementById("filo-path");
-const filoSvg = filo.ownerSVGElement;
-const gomitolo = document.querySelector(".gomitolo");
-let lunghezza = 0, larghezza = 0;
-function disegnaFilo() {
-  larghezza = filoSvg.clientWidth;
-  filoSvg.setAttribute("viewBox", `0 0 ${larghezza} 24`);
-  let d = "M0 12";
-  for (let x = 0, i = 0; x < larghezza; x += 26, i++) d += ` Q${x + 13} ${i % 2 ? 20 : 4} ${x + 26} 12`;
-  filo.setAttribute("d", d);
-  lunghezza = filo.getTotalLength();
-  filo.style.strokeDasharray = lunghezza;
-}
-disegnaFilo();
-
-let ultimoY = scrollY, velocita = 0;
+// ----- Barra di avanzamento -----
+const barra = document.getElementById("progresso");
 function suScroll() {
   const max = document.documentElement.scrollHeight - innerHeight;
-  const p = max > 0 ? Math.min(scrollY / max, 1) : 0;
-  filo.style.strokeDashoffset = lunghezza * (1 - p);
-  gomitolo.style.transform = `translateX(${p * larghezza}px) rotate(${p * 1440}deg) scale(${1 - p * 0.45})`;
-  velocita = scrollY - ultimoY; ultimoY = scrollY;
+  barra.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
 }
 addEventListener("scroll", suScroll, { passive: true });
-addEventListener("resize", () => { disegnaFilo(); suScroll(); });
 suScroll();
 
-// Nastro: accelera e cambia verso seguendo lo scroll
-const nastro = document.querySelector(".nastro-traccia");
-if (moto && nastro.getAnimations) {
-  let vel = 1;
+// ----- Ingressi -----
+if (moto && "IntersectionObserver" in window) {
+  const osserva = (el, classe) => {
+    const o = new IntersectionObserver((v) => {
+      if (v[0].isIntersecting) { el.classList.add(classe); o.disconnect(); }
+    }, { rootMargin: "0px 0px -10% 0px" });
+    o.observe(el);
+  };
+
+  // titoli: le parole salgono una alla volta
+  document.querySelectorAll("h1, section h2").forEach((t) => {
+    t.innerHTML = t.textContent.trim().split(/\s+/)
+      .map((p, i) => `<span class="parola"><span style="--i:${i}">${p}</span></span>`).join(" ");
+    osserva(t, "titolo-visibile");
+  });
+
+  // testi e blocchi: salgono in sequenza
+  document.querySelectorAll(".hero-sotto, .hero-azioni, .intro, .prodotto-testo, .passo, .chi-sono-corpo > *, .segui p, .segui-handle, .crea-testo .scelta, .crea-azioni")
+    .forEach((el) => {
+      el.classList.add("entra");
+      const fratelli = [...el.parentElement.children];
+      el.style.setProperty("--ritardo", `${Math.min(fratelli.indexOf(el), 4) * 0.09}s`);
+      osserva(el, "visibile");
+    });
+
+  // immagini: si aprono dal basso come una tenda
+  document.querySelectorAll(".prodotto-figura, .hero-figura .maglia").forEach((el, i) => {
+    el.classList.add("rivela");
+    el.style.setProperty("--ritardo", `${(i % 3) * 0.12}s`);
+    osserva(el, "visibile");
+  });
+
+  // Nastro: accelera seguendo la velocità dello scroll
+  const nastro = document.getElementById("nastro");
+  let ultimoY = scrollY, velocita = 0, vel = 1;
+  addEventListener("scroll", () => { velocita = scrollY - ultimoY; ultimoY = scrollY; }, { passive: true });
   (function ciclo() {
-    const anim = nastro.getAnimations()[0];
-    const obiettivo = 1 + Math.min(Math.abs(velocita) / 6, 6) * Math.sign(velocita || 1);
-    vel += (obiettivo - vel) * 0.08;
+    const anim = nastro.getAnimations?.()[0];
+    const obiettivo = 1 + Math.min(Math.abs(velocita) / 8, 5) * Math.sign(velocita || 1);
+    vel += (obiettivo - vel) * 0.06;
     if (anim) anim.playbackRate = vel;
     velocita *= 0.9;
     requestAnimationFrame(ciclo);
@@ -179,51 +220,20 @@ if (moto && nastro.getAnimations) {
 }
 
 if (moto && puntatoreFine) {
-  // Schede 3D
-  document.querySelectorAll(".prodotto-figura").forEach((f) => {
-    f.addEventListener("pointermove", (e) => {
-      const r = f.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
-      f.style.transform = `perspective(700px) rotateX(${-y * 14}deg) rotateY(${x * 16}deg) scale(1.03)`;
-      f.style.setProperty("--px", `${x * 18}px`);
-      f.style.setProperty("--py", `${y * 18}px`);
-    });
-    f.addEventListener("pointerleave", () => {
-      f.style.transform = ""; f.style.setProperty("--px", "0px"); f.style.setProperty("--py", "0px");
-    });
-  });
-
   // Bottoni magnetici
   document.querySelectorAll(".bottone").forEach((b) => {
     b.addEventListener("pointermove", (e) => {
       const r = b.getBoundingClientRect();
-      b.style.translate = `${(e.clientX - r.left - r.width / 2) * 0.25}px ${(e.clientY - r.top - r.height / 2) * 0.35}px`;
+      b.style.translate = `${(e.clientX - r.left - r.width / 2) * 0.2}px ${(e.clientY - r.top - r.height / 2) * 0.3}px`;
     });
     b.addEventListener("pointerleave", () => { b.style.translate = "0 0"; });
   });
 
-  // Hero: i pezzi seguono il mouse a profondità diverse
-  const hero = document.querySelector(".hero");
-  const pezzi = [...document.querySelectorAll(".hero-pezzo, .hero .raggi, .hero .pennellata")];
-  const profondita = [28, -22, 16, 40, -36, 8];
-  hero.addEventListener("pointermove", (e) => {
+  // Hero: il telo si inclina appena seguendo il mouse
+  const figura = document.querySelector(".hero-figura");
+  document.querySelector(".hero").addEventListener("pointermove", (e) => {
     const x = e.clientX / innerWidth - 0.5, y = e.clientY / innerHeight - 0.5;
-    pezzi.forEach((el, i) => { el.style.translate = `${x * profondita[i]}px ${y * profondita[i]}px`; });
+    figura.style.transform = `perspective(1400px) rotateY(${x * 5}deg) rotateX(${-y * 4}deg)`;
   });
+  figura.style.transition = "transform .8s cubic-bezier(.22,1,.36,1)";
 }
-
-// Configuratore: schizzo di colore e sfondo tinto a ogni scelta
-const schizzo = document.getElementById("schizzo");
-const sezioneCrea = document.querySelector(".crea");
-const aggiornaBase = aggiorna;
-aggiorna = function () {
-  aggiornaBase();
-  sezioneCrea.style.setProperty("--colore-scelto", stato.colore.valore);
-  if (moto && schizzo.animate) {
-    schizzo.animate(
-      [{ transform: "scale(.2)", opacity: .55 }, { transform: "scale(1.15)", opacity: 0 }],
-      { duration: 700, easing: "cubic-bezier(.2,.8,.3,1)" }
-    );
-  }
-};
-sezioneCrea.style.setProperty("--colore-scelto", stato.colore.valore);
