@@ -1,10 +1,10 @@
 // ===== Da completare: i tuoi contatti =====
 // Scrivi qui il nome utente e il numero, il resto del sito si aggiorna da solo.
 const CONTATTI = {
-  instagram: "atenir",          // nome utente Instagram, senza @
-  tiktok: "atenir",             // nome utente TikTok, senza @
-  whatsapp: "390000000000",     // numero con prefisso, solo cifre (es. 393331234567)
-  email: "ciao@atenir.it",
+  instagram: "atenir_handmade", // nome utente Instagram, senza @
+  tiktok: "",                   // nome utente TikTok, senza @ (vuoto = nascosto)
+  whatsapp: "",                 // numero con prefisso, solo cifre, es. 393331234567 (vuoto = nascosto)
+  email: "",                    // indirizzo email (vuoto = nascosto)
 };
 // ==========================================
 
@@ -29,6 +29,7 @@ const link = {
 };
 
 document.querySelectorAll("[data-link]").forEach((a) => {
+  if (!CONTATTI[a.dataset.link]) { a.remove(); return; }
   a.href = link[a.dataset.link];
   if (!a.href.startsWith("mailto:")) { a.target = "_blank"; a.rel = "noopener"; }
 });
@@ -88,6 +89,7 @@ function aggiorna() {
   nota.textContent = "";
 }
 
+if (!CONTATTI.whatsapp) ordinaWa.remove();
 [ordinaIg, ordinaWa].forEach((a) => { a.target = "_blank"; a.rel = "noopener"; });
 
 // Instagram non permette di precompilare il messaggio: lo copiamo negli appunti.
