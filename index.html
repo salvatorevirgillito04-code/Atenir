@@ -4,20 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Atenir · Uncinetto fatto a mano</title>
-  <meta name="description" content="Atenir: berrette, sciarpotti e borsette all'uncinetto, fatti a mano uno alla volta nei colori che scegli tu. Ordina su Instagram @atenir_handmade.">
+  <meta name="description" content="Atenir: berrette, sciarpotti e borse all'uncinetto, fatti a mano uno alla volta. Disegna il tuo modello colore per colore e ordinalo su Instagram @atenir_handmade.">
   <meta property="og:title" content="Atenir · Uncinetto fatto a mano">
-  <meta property="og:description" content="Berrette, sciarpotti e borsette all'uncinetto, fatti a mano nei colori che scegli tu.">
-  <meta property="og:image" content="assets/logo.png">
+  <meta property="og:description" content="Berrette, sciarpotti e borse all'uncinetto, fatti a mano nei colori che scegli tu.">
+  <meta property="og:image" content="assets/foto/sciarpotto-1.jpg">
   <meta name="theme-color" content="#f4f3ef">
   <link rel="icon" href="assets/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=DM+Sans:opsz,wght@9..40,400..600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..400&family=DM+Sans:opsz,wght@9..40,400..600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <div class="progresso" aria-hidden="true"><span id="progresso"></span></div>
+<div class="cursore" id="cursore" aria-hidden="true"><span id="cursore-testo"></span></div>
 
 <header class="testata">
   <a class="testata-logo" href="#inizio" aria-label="Atenir, torna all'inizio">
@@ -25,8 +26,8 @@
   </a>
   <nav class="testata-nav" aria-label="Sezioni">
     <a href="#collezione">Collezione</a>
-    <a href="#crea">Su misura</a>
-    <a href="#ordinare">Come ordinare</a>
+    <a href="#crea">Crea il tuo</a>
+    <a href="#gioco">Gioca</a>
     <a href="#chi-sono">Chi sono</a>
   </nav>
   <a class="testata-ig" data-link="instagram" href="#">Instagram</a>
@@ -37,16 +38,17 @@
   <section class="hero" aria-labelledby="titolo-hero">
     <div class="hero-testo">
       <h1 id="titolo-hero">Fatto a mano, pensato per durare.</h1>
-      <p class="hero-sotto">Berrette, sciarpotti e borsette all'uncinetto, lavorati uno alla volta nel colore che scegli tu. Nessuna produzione in serie: ogni pezzo nasce per chi lo indossa.</p>
+      <p class="hero-sotto">Berrette, sciarpotti e borse all'uncinetto, lavorati uno alla volta nei colori che scegli tu. Nessuna produzione in serie: ogni pezzo nasce per chi lo indossa.</p>
       <div class="hero-azioni">
-        <a class="bottone" href="#crea">Scegli il tuo colore</a>
+        <a class="bottone" href="#crea">Crea il tuo modello</a>
         <a class="link-freccia" href="#collezione">Vedi la collezione</a>
       </div>
     </div>
-    <figure class="hero-figura">
-      <canvas class="maglia" id="maglia-hero" data-forma="telo" data-colore="#3a6df0" data-punto="22" aria-hidden="true"></canvas>
-      <figcaption class="hero-didascalia"><span id="hero-nome-colore">Blu Atenir</span> · lavorato a mano, una maglia alla volta</figcaption>
-    </figure>
+    <div class="hero-collage" aria-hidden="true">
+      <figure class="collage-foto collage-a" data-velocita="-0.06"><img src="assets/foto/sciarpotto-1.jpg" alt="" width="900" height="885"></figure>
+      <figure class="collage-foto collage-b" data-velocita="0.1"><img src="assets/foto/borsa-3.jpg" alt="" width="472" height="648"></figure>
+      <figure class="collage-foto collage-c" data-velocita="0.18"><img src="assets/foto/berretta-3.jpg" alt="" width="554" height="554"></figure>
+    </div>
   </section>
 
   <div class="nastro" aria-hidden="true">
@@ -54,74 +56,143 @@
   </div>
 
   <section class="collezione" id="collezione" aria-labelledby="titolo-collezione">
-    <div class="sezione-testa">
-      <h2 id="titolo-collezione">Tre pezzi, fatti con cura.</h2>
-      <p class="intro">Ogni pezzo è disponibile in tutti i colori della palette, dai toni accesi del logo ai neutri.</p>
-    </div>
+    <div class="orizzontale-fisso">
+      <div class="orizzontale-traccia" id="traccia">
 
-    <div class="prodotti">
-      <article class="prodotto">
-        <figure class="prodotto-figura" data-foto="assets/foto/berretta.jpg">
-          <canvas class="maglia" data-forma="berretta" data-colore="#b8322f" aria-label="Berretta all'uncinetto rossa" role="img"></canvas>
-        </figure>
-        <div class="prodotto-testo">
-          <h3>Berrette</h3>
-          <p>Risvolto a coste, pompon se lo vuoi. Lana calda per l'inverno, cotone per le mezze stagioni.</p>
-          <a class="link-freccia" href="#crea" data-scegli="berretta">Personalizza</a>
+        <div class="pannello pannello-intro">
+          <h2 id="titolo-collezione">La collezione.</h2>
+          <p class="intro">Tre famiglie di pezzi, tutte disponibili nei colori della palette o nei tuoi. Tocca una foto per vederla da vicino.</p>
+          <p class="suggerimento" aria-hidden="true">Scorri</p>
         </div>
-      </article>
-      <article class="prodotto">
-        <figure class="prodotto-figura" data-foto="assets/foto/sciarpotto.jpg">
-          <canvas class="maglia" data-forma="sciarpotto" data-colore="#5f9a50" aria-label="Sciarpotto all'uncinetto verde" role="img"></canvas>
-        </figure>
-        <div class="prodotto-testo">
-          <h3>Sciarpotti</h3>
-          <p>Ampi, avvolgenti, con le frange. Da tenere addosso dal primo freddo fino a primavera.</p>
-          <a class="link-freccia" href="#crea" data-scegli="sciarpotto">Personalizza</a>
-        </div>
-      </article>
-      <article class="prodotto">
-        <figure class="prodotto-figura" data-foto="assets/foto/borsetta.jpg">
-          <canvas class="maglia" data-forma="borsetta" data-colore="#e9ae45" aria-label="Borsetta all'uncinetto gialla" role="img"></canvas>
-        </figure>
-        <div class="prodotto-testo">
-          <h3>Borsette</h3>
-          <p>Piccole e resistenti, manico intrecciato e bottone in legno. Telefono, chiavi e poco altro.</p>
-          <a class="link-freccia" href="#crea" data-scegli="borsetta">Personalizza</a>
-        </div>
-      </article>
+
+        <article class="pannello categoria">
+          <div class="categoria-testo">
+            <h3>Berrette</h3>
+            <p>A coste morbide, con il risvolto e il pompon se lo vuoi. Lana per l'inverno, cotone per le mezze stagioni.</p>
+            <a class="link-freccia" href="#crea" data-editor="berretta">Disegna la tua</a>
+          </div>
+          <div class="categoria-foto">
+            <button class="foto foto-grande" data-cursore="Guarda" data-grande="assets/foto/berretta-3.jpg"><img src="assets/foto/berretta-3.jpg" alt="Berretta a coste multicolore" loading="lazy" width="554" height="554"></button>
+            <button class="foto" data-cursore="Guarda" data-grande="assets/foto/berretta-1.jpg"><img src="assets/foto/berretta-1.jpg" alt="Due berrette a coste, ruggine e panna" loading="lazy" width="339" height="270"></button>
+            <button class="foto" data-cursore="Guarda" data-grande="assets/foto/berretta-2.jpg"><img src="assets/foto/berretta-2.jpg" alt="Berretta arancione con pompon" loading="lazy" width="588" height="399"></button>
+          </div>
+        </article>
+
+        <article class="pannello categoria">
+          <div class="categoria-testo">
+            <h3>Sciarpotti</h3>
+            <p>Lunghi e avvolgenti, a righe o in tinta unita, con le frange. Da tenere addosso dal primo freddo fino a primavera.</p>
+            <a class="link-freccia" href="#crea" data-editor="sciarpotto">Disegna il tuo</a>
+          </div>
+          <div class="categoria-foto">
+            <button class="foto foto-grande" data-cursore="Guarda" data-grande="assets/foto/sciarpotto-1.jpg"><img src="assets/foto/sciarpotto-1.jpg" alt="Sciarpotto blu a righe grigie con frange" loading="lazy" width="900" height="885"></button>
+            <button class="foto" data-cursore="Guarda" data-grande="assets/foto/sciarpotto-2.jpg"><img src="assets/foto/sciarpotto-2.jpg" alt="Sciarpotto grigio a punto nocciolina" loading="lazy" width="480" height="639"></button>
+            <button class="foto" data-cursore="Guarda" data-grande="assets/foto/sciarpotto-3.jpg"><img src="assets/foto/sciarpotto-3.jpg" alt="Sciarpotto a righe azzurre e panna" loading="lazy" width="414" height="370"></button>
+          </div>
+        </article>
+
+        <article class="pannello categoria">
+          <div class="categoria-testo">
+            <h3>Borse</h3>
+            <p>In fettuccia resistente, dalla pochette alla borsa a spalla. Il colore lo scegli tu, la forma la decidiamo insieme.</p>
+            <a class="link-freccia" href="#crea" data-editor="borsa">Disegna la tua</a>
+          </div>
+          <div class="categoria-foto">
+            <button class="foto foto-grande" data-cursore="Guarda" data-grande="assets/foto/borsa-3.jpg"><img src="assets/foto/borsa-3.jpg" alt="Borsa gialla con nappina" loading="lazy" width="472" height="648"></button>
+            <button class="foto" data-cursore="Guarda" data-grande="assets/foto/borsa-1.jpg"><img src="assets/foto/borsa-1.jpg" alt="Pochette rossa" loading="lazy" width="447" height="447"></button>
+            <button class="foto" data-cursore="Guarda" data-grande="assets/foto/borsa-2.jpg"><img src="assets/foto/borsa-2.jpg" alt="Borsa azzurra con manico" loading="lazy" width="447" height="447"></button>
+          </div>
+        </article>
+
+      </div>
     </div>
   </section>
 
-  <section class="crea" id="crea" aria-labelledby="titolo-crea">
-    <figure class="crea-anteprima">
-      <canvas class="maglia" id="maglia-crea" data-forma="berretta" data-colore="#b8322f" role="img" aria-labelledby="etichetta-anteprima"></canvas>
-      <figcaption class="etichetta" id="etichetta-anteprima">Berretta, Rosso papavero</figcaption>
-    </figure>
+  <section class="editor" id="crea" aria-labelledby="titolo-editor">
+    <div class="editor-testa">
+      <h2 id="titolo-editor">Crea il tuo, colore per colore.</h2>
+      <p class="intro">Scegli il pezzo, prendi un colore e tocca le parti da colorare. Righe, tinta unita o tutti i colori che vuoi: il modello lo decidi tu.</p>
+    </div>
 
-    <div class="crea-testo">
-      <h2 id="titolo-crea">Il tuo pezzo, il tuo colore.</h2>
-      <p class="intro">Scegli il pezzo e il colore. Quando ti convince, scrivimi su Instagram: il messaggio è già pronto da incollare.</p>
+    <div class="editor-corpo">
+      <figure class="editor-anteprima">
+        <canvas id="editor-tela" role="img" aria-label="Anteprima del modello" data-cursore="Colora"></canvas>
+        <figcaption id="editor-riepilogo"></figcaption>
+      </figure>
 
-      <fieldset class="scelta">
-        <legend>Pezzo</legend>
-        <div class="segmenti" role="radiogroup">
-          <button type="button" role="radio" aria-checked="true" data-pezzo="berretta">Berretta</button>
-          <button type="button" role="radio" aria-checked="false" data-pezzo="sciarpotto">Sciarpotto</button>
-          <button type="button" role="radio" aria-checked="false" data-pezzo="borsetta">Borsetta</button>
+      <div class="editor-comandi">
+        <fieldset class="scelta">
+          <legend>Pezzo</legend>
+          <div class="segmenti" role="radiogroup">
+            <button type="button" role="radio" aria-checked="true" data-editor-prodotto="berretta">Berretta</button>
+            <button type="button" role="radio" aria-checked="false" data-editor-prodotto="sciarpotto">Sciarpotto</button>
+            <button type="button" role="radio" aria-checked="false" data-editor-prodotto="borsa">Borsa</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="scelta">
+          <legend>Colore del pennello: <span id="editor-pennello-nome"></span></legend>
+          <div class="campioni" role="radiogroup" id="editor-pennelli"></div>
+        </fieldset>
+
+        <fieldset class="scelta">
+          <legend>Parti da colorare</legend>
+          <div class="zone" id="editor-zone"></div>
+        </fieldset>
+
+        <div class="strumenti">
+          <button type="button" class="strumento" id="editor-tinta">Tutto di questo colore</button>
+          <button type="button" class="strumento" id="editor-righe">A righe</button>
+          <button type="button" class="strumento" id="editor-caso">A sorpresa</button>
+          <button type="button" class="strumento" id="editor-annulla">Annulla</button>
         </div>
-      </fieldset>
 
-      <fieldset class="scelta">
-        <legend>Colore: <span id="nome-colore">Rosso papavero</span></legend>
-        <div class="campioni" role="radiogroup" id="colori"></div>
-      </fieldset>
-
-      <div class="crea-azioni">
-        <a class="bottone" id="ordina-instagram" href="#">Chiedi su Instagram</a>
-        <a class="bottone bottone-secondario" id="ordina-whatsapp" href="#">Chiedi su WhatsApp</a>
+        <div class="editor-azioni">
+          <a class="bottone" id="editor-instagram" href="#">Chiedi su Instagram</a>
+          <a class="bottone bottone-secondario" id="editor-whatsapp" href="#">Chiedi su WhatsApp</a>
+          <button type="button" class="link-freccia" id="editor-scarica">Scarica l'immagine</button>
+        </div>
+        <p class="nota" id="editor-nota" aria-live="polite"></p>
       </div>
-      <p class="nota" id="nota-copia" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="gioco" id="gioco" aria-labelledby="titolo-gioco">
+    <div class="gioco-testa">
+      <h2 id="titolo-gioco">Prova a lavorare all'uncinetto.</h2>
+      <p class="intro">Una sciarpina da settanta maglie. Premi quando il segno passa nella zona chiara: al centro la maglia viene perfetta. Ogni riga il ritmo aumenta, e hai tre gomitoli.</p>
+    </div>
+
+    <div class="gioco-corpo">
+      <div class="gioco-lavoro">
+        <canvas id="gioco-tela" aria-label="Il tuo lavoro all'uncinetto" role="img"></canvas>
+        <svg class="gioco-uncinetto" id="gioco-uncinetto" viewBox="0 0 24 140" aria-hidden="true">
+          <path d="M12 4c-5 0-6 7-2 9" fill="none" stroke="#c9cdd3" stroke-width="3" stroke-linecap="round"/>
+          <rect x="9.5" y="6" width="5" height="70" rx="2.5" fill="#c9cdd3"/>
+          <rect x="7" y="70" width="10" height="66" rx="5" fill="#3a6df0"/>
+        </svg>
+        <div class="gioco-schermo" id="gioco-schermo">
+          <p class="gioco-schermo-titolo" id="gioco-schermo-titolo">Pronta a iniziare?</p>
+          <p id="gioco-schermo-testo">Scegli il filato e premi Inizia.</p>
+          <div class="fili" id="gioco-fili" aria-label="Filato"></div>
+          <button type="button" class="bottone" id="gioco-inizia">Inizia</button>
+          <p class="gioco-record" id="gioco-record"></p>
+        </div>
+      </div>
+
+      <div class="gioco-pannello">
+        <dl class="gioco-hud">
+          <div><dt>Punti</dt><dd id="gioco-punti">0</dd></div>
+          <div><dt>Maglie</dt><dd id="gioco-maglie">0/70</dd></div>
+          <div><dt>Gomitoli</dt><dd id="gioco-vite">●●●</dd></div>
+        </dl>
+        <div class="gioco-barra" id="gioco-barra">
+          <span class="gioco-zona" id="gioco-zona"></span>
+          <span class="gioco-segno" id="gioco-segno"></span>
+        </div>
+        <button type="button" class="bottone gioco-punto" id="gioco-punto" disabled>Fai la maglia</button>
+        <p class="gioco-messaggio" id="gioco-messaggio" aria-live="polite">Da tastiera puoi usare la barra spaziatrice.</p>
+      </div>
     </div>
   </section>
 
@@ -130,7 +201,7 @@
     <div class="passi">
       <div class="passo">
         <h3>Scegli</h3>
-        <p>Pezzo e colore dal configuratore, oppure prendi spunto dai lavori su Instagram.</p>
+        <p>Crea il tuo modello qui sopra, oppure prendi spunto dalla collezione e dai lavori su Instagram.</p>
       </div>
       <div class="passo">
         <h3>Scrivimi</h3>
@@ -171,7 +242,14 @@
   <p>© <span id="anno">2026</span> Atenir · Uncinetto fatto a mano in Italia</p>
 </footer>
 
-<script src="maglia.js"></script>
+<dialog class="lightbox" id="lightbox" aria-label="Foto ingrandita">
+  <img id="lightbox-img" alt="">
+  <button type="button" class="lightbox-chiudi" id="lightbox-chiudi" aria-label="Chiudi">Chiudi</button>
+</dialog>
+
+<script src="trama.js"></script>
 <script src="script.js"></script>
+<script src="editor.js"></script>
+<script src="gioco.js"></script>
 </body>
 </html>
