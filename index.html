@@ -17,7 +17,6 @@
 </head>
 <body>
 
-<div class="progresso" aria-hidden="true"><span id="progresso"></span></div>
 <div class="cursore" id="cursore" aria-hidden="true"><span id="cursore-testo"></span></div>
 
 <header class="testata">
@@ -31,6 +30,15 @@
     <a href="#chi-sono">Chi sono</a>
   </nav>
   <a class="testata-ig" data-link="instagram" href="#">Instagram</a>
+  <div class="filo" aria-hidden="true">
+    <svg class="filo-svg" id="filo-svg"><path id="filo-ombra"/><path id="filo-path"/></svg>
+    <svg class="gomitolo" id="gomitolo" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="17" fill="#3a6df0"/>
+      <g fill="none" stroke="#fff" stroke-linecap="round" stroke-width="1.4" opacity=".55">
+        <path d="M6 13c9 1 18 8 21 22"/><path d="M10 7c10 3 19 11 22 22"/><path d="M18 3.5c-5 8-7 20-3 33"/><path d="M4 22c8-6 20-8 32-3"/>
+      </g>
+    </svg>
+  </div>
 </header>
 
 <main id="inizio">
@@ -111,7 +119,7 @@
   <section class="editor" id="crea" aria-labelledby="titolo-editor">
     <div class="editor-testa">
       <h2 id="titolo-editor">Crea il tuo, colore per colore.</h2>
-      <p class="intro">Scegli il pezzo e un colore, poi tocca il disegno per colorare ogni parte.</p>
+      <p class="intro">Scegli il pezzo e un colore, poi tocca una parte: nell'elenco o direttamente sul disegno.</p>
     </div>
 
     <div class="editor-corpo">
@@ -135,8 +143,14 @@
           <div class="campioni" role="radiogroup" id="editor-pennelli"></div>
         </fieldset>
 
+        <fieldset class="scelta">
+          <legend>Parti: tocca per colorare</legend>
+          <div class="zone" id="editor-zone"></div>
+        </fieldset>
+
         <div class="strumenti">
-          <button type="button" class="strumento" id="editor-tinta">Colora tutto</button>
+          <button type="button" class="strumento" id="editor-tinta">Tutto di un colore</button>
+          <button type="button" class="strumento" id="editor-righe">A righe</button>
           <button type="button" class="strumento" id="editor-annulla">Annulla</button>
         </div>
 
@@ -152,7 +166,7 @@
   <section class="gioco" id="gioco" aria-labelledby="titolo-gioco">
     <div class="gioco-testa">
       <h2 id="titolo-gioco">Lavora un cuoricino.</h2>
-      <p class="intro">Ventisette maglie, un minuto di gioco. Premi quando il segno passa nella zona chiara: al centro la maglia viene perfetta.</p>
+      <p class="intro">Tredici maglie, mezzo minuto. Premi quando il segno passa nella zona chiara: al centro la maglia viene perfetta.</p>
     </div>
 
     <div class="gioco-corpo">
@@ -175,7 +189,7 @@
       <div class="gioco-pannello">
         <div class="gioco-hud">
           <p><span class="gioco-etichetta">Punti</span><span class="gioco-numero" id="gioco-punti">0</span></p>
-          <p><span class="gioco-etichetta">Maglie</span><span class="gioco-numero" id="gioco-maglie">0/27</span></p>
+          <p><span class="gioco-etichetta">Maglie</span><span class="gioco-numero" id="gioco-maglie">0/13</span></p>
           <p><span class="gioco-etichetta">Gomitoli</span><span class="gioco-vite" id="gioco-vite"></span></p>
         </div>
         <div class="gioco-barra" id="gioco-barra">

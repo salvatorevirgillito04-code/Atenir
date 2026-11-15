@@ -54,6 +54,10 @@
     },
   };
 
+  const ALTEZZA = { pompon: 0, c1: 1, c2: 2, c3: 3, c4: 4, risvolto: 5, collo: 0, f1: 1, f2: 2, f3: 3, f4: 4, frange: 5, manico: 0, bordo: 1, b1: 2, b2: 3, b3: 4 };
+  const dallAlto = (p) => [...PRODOTTI[p].zone].sort((a, b) => ALTEZZA[a.id] - ALTEZZA[b.id]);
+  const maiuscola = (t) => t[0].toUpperCase() + t.slice(1);
+
   const stato = {
     prodotto: "berretta",
     pennello: colore("Rosso papavero"),
@@ -270,6 +274,15 @@
   elProdotti.forEach((b) => b.addEventListener("click", () => scegliProdotto(b.dataset.editorProdotto)));
   window.editorProdotto = scegliProdotto;
 
+  const elZone = document.getElementById("editor-zone");
+  document.getElementById("editor-righe").addEventListener("click", () => {
+    const zone = dallAlto(stato.prodotto), col = stato.colori[stato.prodotto];
+    const altro = [...new Set(Object.values(col))].find((n) => n !== stato.pennello.nome) || (stato.pennello.nome === "Panna" ? "Antracite" : "Panna");
+    const prima = { ...col };
+    stato.storia.push({ prodotto: stato.prodotto, colori: prima });
+    zone.forEach((z, i) => { col[z.id] = i % 2 ? altro : stato.pennello.nome; });
+    const vecchia = base; base = costruisci(); transizione(vecchia, null); aggiornaUI();
+  });
   document.getElementById("editor-tinta").addEventListener("click", () =>
     colora(PRODOTTI[stato.prodotto].zone.map((z) => z.id), stato.pennello.nome));
   document.getElementById("editor-annulla").addEventListener("click", () => {
@@ -314,6 +327,16 @@
       b.setAttribute("aria-checked", String(b.getAttribute("aria-label") === stato.pennello.nome)));
     elPennelloNome.textContent = stato.pennello.nome;
     elRiepilogo.textContent = `${p.nome} · ${[...new Set(Object.values(col))].join(", ")}`;
+    elZone.replaceChildren(...dallAlto(stato.prodotto).map((z) => {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "zona";
+      b.innerHTML = `<i style="--c:${colore(col[z.id]).valore}"></i>${maiuscola(z.nome)}`;
+      b.title = `Colora: ${z.nome}`;
+      b.addEventListener("click", () => colora([z.id], stato.pennello.nome));
+      b.addEventListener("pointerenter", () => evidenzia(z.id));
+      b.addEventListener("pointerleave", () => evidenzia(null));
+      return b;
+    }));
     if (CONTATTI.whatsapp) ordinaWa.href = `${link.whatsapp}?text=${encodeURIComponent(messaggio())}`;
     elNota.textContent = "";
   }

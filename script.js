@@ -64,7 +64,22 @@ lightbox.addEventListener("click", (e) => { if (e.target === lightbox) lightbox.
 const collezione = document.getElementById("collezione");
 const traccia = document.getElementById("traccia");
 const largo = matchMedia("(min-width: 961px)");
-const barra = document.getElementById("progresso");
+// Filo di lana sotto la testata: si srotola con lo scroll, il gomitolo rotola e si consuma
+const filo = document.getElementById("filo-path");
+const filoOmbra = document.getElementById("filo-ombra");
+const filoSvg = document.getElementById("filo-svg");
+const gomitolo = document.getElementById("gomitolo");
+let lunghezzaFilo = 0, larghezzaFilo = 0;
+function disegnaFilo() {
+  larghezzaFilo = filoSvg.clientWidth;
+  filoSvg.setAttribute("viewBox", `0 0 ${larghezzaFilo} 16`);
+  let d = "M0 8";
+  for (let x = 0, i = 0; x < larghezzaFilo; x += 22, i++) d += ` Q${x + 11} ${i % 2 ? 13 : 3} ${x + 22} 8`;
+  filo.setAttribute("d", d);
+  filoOmbra.setAttribute("d", d);
+  lunghezzaFilo = filo.getTotalLength();
+  filo.style.strokeDasharray = `${lunghezzaFilo}`;
+}
 const collage = [...document.querySelectorAll("[data-velocita]")];
 const fotoCollezione = [...document.querySelectorAll(".categoria .foto")].map((el) => ({ el, img: el.querySelector("img"), centro: 0 }));
 let distanza = 0, inizioCollezione = 0, altezzaPagina = 0;
@@ -86,6 +101,7 @@ function impagina() {
     traccia.style.transform = "";
     fotoCollezione.forEach((f) => { f.img.style.transform = ""; });
   }
+  disegnaFilo();
   inizioCollezione = collezione.offsetTop;
   altezzaPagina = document.documentElement.scrollHeight - innerHeight;
   disegnaScroll();
@@ -99,7 +115,10 @@ function suScroll() {
 }
 function disegnaScroll() {
   const y = scrollY;
-  barra.style.transform = `scaleX(${altezzaPagina > 0 ? Math.min(y / altezzaPagina, 1) : 0})`;
+  const avanz = altezzaPagina > 0 ? Math.min(y / altezzaPagina, 1) : 0;
+  const x = avanz * larghezzaFilo;
+  filo.style.strokeDashoffset = (lunghezzaFilo * (1 - avanz)).toFixed(1);
+  gomitolo.style.transform = `translate3d(${x.toFixed(1)}px,0,0) rotate(${(x / 16 * 57.3).toFixed(1)}deg) scale(${(1 - avanz * 0.3).toFixed(3)})`;
   if (moto && y < innerHeight * 1.2) collage.forEach((el) => { el.style.translate = `0 ${(y * +el.dataset.velocita).toFixed(1)}px`; });
   if (!distanza) return;
   const p = Math.min(Math.max((y - inizioCollezione) / distanza, 0), 1);

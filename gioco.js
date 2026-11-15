@@ -1,4 +1,4 @@
-// Mini gioco: lavora un cuoricino all'uncinetto, 27 maglie.
+// Mini gioco: lavora un cuoricino all'uncinetto, 13 maglie.
 // Premi quando il segno è nella zona chiara: maglia perfetta, buona o saltata.
 (function () {
   const sezione = document.getElementById("gioco");
@@ -10,9 +10,9 @@
   const schermo = $("gioco-schermo"), titoloSchermo = $("gioco-schermo-titolo"), testoSchermo = $("gioco-schermo-testo");
   const elPunti = $("gioco-punti"), elMaglie = $("gioco-maglie"), elVite = $("gioco-vite"), elMsg = $("gioco-messaggio"), elFili = $("gioco-fili");
 
-  // Il cuore, dal basso verso l'alto (7 colonne)
-  const FORMA = ["...X...", "..XXX..", ".XXXXX.", "XXXXXXX", "XXXXXXX", ".XX.XX."];
-  const COL = 7, RIG = FORMA.length;
+  // Il cuore, dal basso verso l'alto (5 colonne)
+  const FORMA = ["..X..", ".XXX.", "XXXXX", "XX.XX"];
+  const COL = 5, RIG = FORMA.length;
   const CELLE = []; // ordine di lavoro: righe alterne avanti e indietro, come nella realtà
   FORMA.forEach((riga, r) => {
     const cols = [...riga].map((ch, c) => (ch === "X" ? c : -1)).filter((c) => c >= 0);
@@ -49,7 +49,7 @@
     const dpr = Math.min(devicePixelRatio || 1, 2);
     tela.width = W = Math.round(tela.clientWidth * dpr);
     tela.height = H = Math.round(tela.clientHeight * dpr);
-    cella = Math.min(W / (COL + 3.2), H / (RIG * 0.8 + 3));
+    cella = Math.min(W / (COL + 3), H / (RIG * 0.8 + 2.6));
     ox = (W - cella * COL) / 2;
     oy = H - (H - cella * 0.8 * RIG) / 2;
     disegna();
@@ -151,7 +151,7 @@
     g.maglie.push({ tipo, colore, t: performance.now() });
     uncinetto.classList.remove("affonda"); void uncinetto.offsetWidth; uncinetto.classList.add("affonda");
     const nuovaRiga = i + 1 < TOT && CELLE[i + 1].r !== CELLE[i].r;
-    if (nuovaRiga) { g.riga++; g.velocita += 0.3; }
+    if (nuovaRiga) { g.riga++; g.velocita += 0.4; }
     aggiorna(); disegna();
     if (g.vite <= 0) return fine(false);
     if (g.maglie.length >= TOT) return fine(true);

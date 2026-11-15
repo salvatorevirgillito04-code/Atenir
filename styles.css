@@ -30,8 +30,13 @@ section { padding: clamp(88px, 11vw, 160px) var(--margine); }
 .intro { margin-top: 22px; max-width: 46ch; color: var(--tenue); font-size: 1.125rem; }
 
 /* Barra di avanzamento */
-.progresso { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 40; pointer-events: none; }
-.progresso span { display: block; height: 100%; background: var(--accento); transform-origin: left; transform: scaleX(0); }
+/* Filo di lana con il gomitolo: segue lo scorrimento */
+.filo { position: absolute; left: 0; right: 0; bottom: -8px; height: 16px; pointer-events: none; }
+.filo-svg { display: block; width: 100%; height: 16px; overflow: visible; }
+.filo-svg path { fill: none; stroke-width: 1.6; stroke-linecap: round; }
+#filo-ombra { stroke: rgba(21, 21, 21, .08); }
+#filo-path { stroke: var(--accento); }
+.gomitolo { position: absolute; left: -16px; top: -8px; width: 32px; height: 32px; will-change: transform; }
 
 /* Cerchio che segue il puntatore */
 .cursore {
