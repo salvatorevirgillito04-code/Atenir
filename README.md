@@ -15,3 +15,7 @@ Metti le foto in `assets/foto/` con questi nomi: `berretta.jpg`, `sciarpotto.jpg
 - `styles.css` – stile
 - `maglia.js` – disegna la trama di maglia nei colori scelti
 - `script.js` – contatti, configuratore, animazioni
+
+## Crediti foto
+- `assets/foto/berretta-2.jpg` e `assets/foto/sciarpotto-2.jpg`: Maria Kovalets su Unsplash (licenza Unsplash, uso commerciale libero).
+- Le altre foto in `assets/foto/` sono state fornite dalla proprietaria del sito.
