@@ -43,30 +43,37 @@
     gamba(ctx, x + s * 0.7, y + sh * 0.5, s * 0.2, sh * 0.78, -0.62, colore, v);
   }
 
-  function crea(W, H, colore, s, seme) {
+  // Piastrella ripetibile: poche decine di maglie invece di migliaia.
+  // Le maglie ai bordi usano lo stesso disordine di quelle dal lato opposto, così le giunture non si vedono.
+  const COL = 8, RIG = 10;
+  function piastrella(colore, s) {
+    const sh = s * 0.8, W = Math.round(COL * s), H = Math.round(RIG * sh);
     const c = document.createElement("canvas");
     c.width = W; c.height = H;
     const ctx = c.getContext("2d");
-    const rnd = casuale(seme || 11), sh = s * 0.8;
+    const rnd = casuale(7), j = [];
+    for (let i = 0; i < COL * RIG * 3; i++) j.push(rnd() - 0.5);
+    const kx = W / COL, ky = H / RIG;
     ctx.fillStyle = tono(colore, -0.55);
     ctx.fillRect(0, 0, W, H);
-    for (let r = -1; r < Math.ceil(H / sh) + 2; r++) {
-      for (let c2 = 0; c2 < Math.ceil(W / s) + 1; c2++) {
-        punto(ctx, c2 * s + (rnd() - 0.5) * s * 0.06, r * sh + (rnd() - 0.5) * sh * 0.06, s, colore, (rnd() - 0.5) * 0.1);
+    for (let r = -1; r <= RIG; r++) {
+      for (let k = -1; k <= COL; k++) {
+        const i = (((r % RIG) + RIG) % RIG) * COL + (((k % COL) + COL) % COL);
+        punto(ctx, k * kx + j[i * 3] * s * 0.06, r * ky + j[i * 3 + 1] * sh * 0.06, s, colore, j[i * 3 + 2] * 0.1);
       }
     }
     return c;
   }
 
   const cache = new Map();
-  function texture(W, H, colore, s) {
-    const k = `${W}x${H}:${colore}:${s.toFixed(1)}`;
+  function motivo(colore, s) {
+    const k = `${colore}:${Math.round(s * 10)}`;
     if (!cache.has(k)) {
-      if (cache.size > 40) cache.clear();
-      cache.set(k, crea(W, H, colore, s, 7));
+      if (cache.size > 60) cache.clear();
+      cache.set(k, piastrella(colore, s));
     }
     return cache.get(k);
   }
 
-  window.Trama = { tono, casuale, punto, texture };
+  window.Trama = { tono, casuale, punto, motivo };
 })();

@@ -64,45 +64,60 @@ lightbox.addEventListener("click", (e) => { if (e.target === lightbox) lightbox.
 const collezione = document.getElementById("collezione");
 const traccia = document.getElementById("traccia");
 const largo = matchMedia("(min-width: 961px)");
-let distanza = 0;
+const barra = document.getElementById("progresso");
+const collage = [...document.querySelectorAll("[data-velocita]")];
+const fotoCollezione = [...document.querySelectorAll(".categoria .foto")].map((el) => ({ el, img: el.querySelector("img"), centro: 0 }));
+let distanza = 0, inizioCollezione = 0, altezzaPagina = 0;
+
+// Le misure si prendono solo quando cambia l'impaginazione, mai durante lo scroll
 function impagina() {
   if (largo.matches) {
+    traccia.style.transform = "translate3d(0,0,0)";
     distanza = Math.max(0, traccia.scrollWidth - innerWidth);
     collezione.style.height = `${distanza + innerHeight}px`;
+    fotoCollezione.forEach((f) => {
+      let x = 0, n = f.el;
+      while (n && n !== traccia) { x += n.offsetLeft; n = n.offsetParent; }
+      f.centro = x + f.el.offsetWidth / 2;
+    });
   } else {
     distanza = 0;
     collezione.style.height = "";
     traccia.style.transform = "";
+    fotoCollezione.forEach((f) => { f.img.style.transform = ""; });
   }
-  suScroll();
+  inizioCollezione = collezione.offsetTop;
+  altezzaPagina = document.documentElement.scrollHeight - innerHeight;
+  disegnaScroll();
 }
 
-// ----- Scroll: barra, orizzontale, parallasse -----
-const barra = document.getElementById("progresso");
-const collage = [...document.querySelectorAll("[data-velocita]")];
-const fotoCollezione = [...document.querySelectorAll(".categoria .foto img")];
+let inAttesa = false;
 function suScroll() {
-  const max = document.documentElement.scrollHeight - innerHeight;
-  barra.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
-
-  if (distanza) {
-    const p = Math.min(Math.max((scrollY - collezione.offsetTop) / distanza, 0), 1);
-    traccia.style.transform = `translate3d(${-p * distanza}px,0,0)`;
-  }
-  if (!moto) return;
-  collage.forEach((el) => { el.style.translate = `0 ${scrollY * +el.dataset.velocita}px`; });
-  if (distanza) {
-    fotoCollezione.forEach((img) => {
-      const r = img.parentElement.getBoundingClientRect();
-      if (r.right < 0 || r.left > innerWidth) return;
-      img.style.translate = `${(r.left + r.width / 2 - innerWidth / 2) * -0.07}px 0`;
-    });
-  }
+  if (inAttesa) return;
+  inAttesa = true;
+  requestAnimationFrame(() => { inAttesa = false; disegnaScroll(); });
+}
+function disegnaScroll() {
+  const y = scrollY;
+  barra.style.transform = `scaleX(${altezzaPagina > 0 ? Math.min(y / altezzaPagina, 1) : 0})`;
+  if (moto && y < innerHeight * 1.2) collage.forEach((el) => { el.style.translate = `0 ${(y * +el.dataset.velocita).toFixed(1)}px`; });
+  if (!distanza) return;
+  const p = Math.min(Math.max((y - inizioCollezione) / distanza, 0), 1);
+  const dx = -p * distanza;
+  traccia.style.transform = `translate3d(${dx.toFixed(1)}px,0,0)`;
+  if (!moto || p <= 0 || p >= 1) return;
+  const meta = innerWidth / 2;
+  fotoCollezione.forEach((f) => {
+    const sx = f.centro + dx;
+    if (sx < -innerWidth * 0.5 || sx > innerWidth * 1.5) return;
+    f.img.style.transform = `translate3d(${((sx - meta) * -0.06).toFixed(1)}px,0,0) scale(1.12)`;
+  });
 }
 addEventListener("scroll", suScroll, { passive: true });
 addEventListener("resize", impagina);
 largo.addEventListener("change", impagina);
 addEventListener("load", impagina);
+document.fonts?.ready.then(impagina);
 impagina();
 
 // ----- Ingressi -----
@@ -136,16 +151,20 @@ if (moto && "IntersectionObserver" in window) {
 
   // nastro: accelera e cambia verso seguendo lo scroll
   const nastro = document.getElementById("nastro");
-  let ultimoY = scrollY, velocita = 0, vel = 1;
-  addEventListener("scroll", () => { velocita = scrollY - ultimoY; ultimoY = scrollY; }, { passive: true });
-  (function ciclo() {
-    const anim = nastro.getAnimations?.()[0];
+  const animNastro = nastro.getAnimations?.()[0];
+  let ultimoY = scrollY, velocita = 0, vel = 1, attivo = false;
+  function ciclo() {
     const obiettivo = 1 + Math.min(Math.abs(velocita) / 8, 5) * Math.sign(velocita || 1);
-    vel += (obiettivo - vel) * 0.06;
-    if (anim) anim.playbackRate = vel;
-    velocita *= 0.9;
+    vel += (obiettivo - vel) * 0.08;
+    velocita *= 0.88;
+    if (animNastro) animNastro.playbackRate = vel;
+    if (Math.abs(vel - 1) < 0.01 && Math.abs(velocita) < 0.1) { vel = 1; if (animNastro) animNastro.playbackRate = 1; attivo = false; return; }
     requestAnimationFrame(ciclo);
-  })();
+  }
+  addEventListener("scroll", () => {
+    velocita = scrollY - ultimoY; ultimoY = scrollY;
+    if (!attivo && animNastro) { attivo = true; requestAnimationFrame(ciclo); }
+  }, { passive: true });
 }
 
 // ----- Puntatore: cerchio che segue il mouse e bottoni magnetici -----
@@ -162,11 +181,13 @@ if (moto && puntatoreFine) {
     cur.classList.toggle("su-link", !t && !!e.target.closest?.("a, button"));
   });
   document.addEventListener("pointerleave", () => cur.classList.remove("attivo"));
-  (function segui() {
-    cx += (mx - cx) * 0.2; cy += (my - cy) * 0.2;
-    cur.style.transform = `translate(${cx}px, ${cy}px)`;
-    requestAnimationFrame(segui);
-  })();
+  let segue = false;
+  function segui() {
+    cx += (mx - cx) * 0.22; cy += (my - cy) * 0.22;
+    cur.style.transform = `translate3d(${cx.toFixed(1)}px, ${cy.toFixed(1)}px, 0)`;
+    if (Math.abs(mx - cx) + Math.abs(my - cy) > 0.3) requestAnimationFrame(segui); else segue = false;
+  }
+  addEventListener("pointermove", () => { if (!segue) { segue = true; requestAnimationFrame(segui); } }, { passive: true });
 
   document.querySelectorAll(".bottone").forEach((b) => {
     b.addEventListener("pointermove", (e) => {

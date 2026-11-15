@@ -84,8 +84,7 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .testata {
   position: sticky; top: 0; z-index: 30;
   display: flex; align-items: center; gap: 32px; padding: 12px var(--margine);
-  background: color-mix(in srgb, var(--fondo) 86%, transparent);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  background: var(--fondo);
 }
 .testata-logo img { width: 108px; height: auto; }
 .testata-nav { display: flex; gap: 34px; margin-left: auto; }
@@ -105,7 +104,7 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .hero-sotto { margin-top: 30px; max-width: 42ch; font-size: 1.2rem; color: var(--tenue); }
 .hero-azioni { margin-top: 40px; display: flex; flex-wrap: wrap; align-items: center; gap: 18px 32px; }
 .hero-collage { position: relative; aspect-ratio: 1 / 1.02; }
-.collage-foto { position: absolute; margin: 0; border-radius: var(--raggio); overflow: hidden; background: var(--superficie); }
+.collage-foto { position: absolute; margin: 0; border-radius: var(--raggio); overflow: hidden; background: var(--superficie); will-change: transform; }
 .collage-foto img { width: 100%; height: 100%; object-fit: cover; }
 .collage-a { left: 12%; top: 0; width: 64%; aspect-ratio: 1; }
 .collage-b { left: 0; bottom: 2%; width: 34%; aspect-ratio: 3 / 4; }
@@ -141,8 +140,9 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
   width: calc(min(70svh, 640px) / 2 * 1.05); height: 100%;
 }
 .foto-grande { grid-row: span 2; width: calc(min(70svh, 640px) * 0.78); }
-.foto img { width: 100%; height: 100%; object-fit: cover; scale: 1.14; transition: scale 1s var(--curva); }
-.foto:hover img { scale: 1.2; }
+.foto img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); will-change: transform; }
+.foto::after { content: ""; position: absolute; inset: 0; background: #000; opacity: 0; transition: opacity .4s ease; }
+.foto:hover::after { opacity: .08; }
 
 /* Editor */
 .editor { background: var(--superficie); }
@@ -202,9 +202,11 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .gioco-uncinetto.affonda { animation: affonda .28s var(--curva); }
 @keyframes affonda { 40% { margin-top: 6px; rotate: -14deg; } }
 .gioco-schermo {
-  position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 14px; text-align: center; padding: 24px;
-  background: color-mix(in srgb, var(--superficie) 82%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(380px, calc(100% - 32px));
+  display: grid; justify-items: center; gap: 12px; text-align: center; padding: 28px 24px;
+  background: var(--fondo); border-radius: 24px; animation: compare .5s var(--curva);
 }
+@keyframes compare { from { opacity: 0; transform: translate(-50%, -44%) scale(.96); } }
 .gioco-schermo[hidden] { display: none; }
 .gioco-schermo-titolo { font: 350 clamp(1.8rem, 3vw, 2.6rem) / 1.05 var(--serif); letter-spacing: -0.02em; }
 .gioco-schermo p:not(.gioco-schermo-titolo) { color: var(--tenue); }
@@ -217,15 +219,35 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .filo-scelta:hover { transform: scale(1.1); }
 .filo-scelta[aria-pressed="true"] { outline: 1.5px solid var(--inchiostro); outline-offset: 4px; }
 .gioco-record { font-size: .9rem; }
-.gioco-hud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 0 0 32px; }
-.gioco-hud dt { color: var(--tenue); font-size: .9rem; }
-.gioco-hud dd { margin: 4px 0 0; font: 350 clamp(1.8rem, 3vw, 2.6rem) / 1 var(--serif); font-variant-numeric: tabular-nums; }
+.gioco-hud { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 0 0 28px; }
+.gioco-hud p { display: grid; gap: 4px; }
+.gioco-etichetta { color: var(--tenue); font-size: .9rem; }
+.gioco-numero { font: 350 clamp(1.8rem, 3vw, 2.6rem) / 1 var(--serif); font-variant-numeric: tabular-nums; }
+.gioco-vite { display: flex; gap: 6px; height: clamp(1.8rem, 3vw, 2.6rem); align-items: center; }
+.gioco-vite svg { width: 26px; height: 26px; fill: var(--accento); transition: transform .5s var(--curva), opacity .5s ease; }
+.gioco-vite svg.perso { opacity: .2; transform: scale(.6) rotate(-90deg); }
 .gioco-barra { position: relative; height: 56px; border-radius: 999px; background: var(--superficie); overflow: hidden; }
 .gioco-barra.scossa { animation: scossa .4s ease; }
 @keyframes scossa { 20%, 60% { translate: -8px 0; } 40%, 80% { translate: 8px 0; } }
-.gioco-zona { position: absolute; top: 0; bottom: 0; background: #fff; transition: left .3s var(--curva), width .3s var(--curva); }
-.gioco-zona::after { content: ""; position: absolute; top: 0; bottom: 0; left: 32.5%; right: 32.5%; background: color-mix(in srgb, var(--accento) 22%, #fff); }
-.gioco-segno { position: absolute; top: 8px; bottom: 8px; width: 4px; margin-left: -2px; border-radius: 4px; background: var(--inchiostro); left: 50%; }
+.gioco-zona { position: absolute; top: 0; bottom: 0; left: 0; background: #fff; transition: transform .35s var(--curva), width .35s var(--curva); }
+.gioco-zona::after { content: ""; position: absolute; top: 0; bottom: 0; left: 30%; right: 30%; background: color-mix(in srgb, var(--accento) 24%, #fff); }
+.gioco-segno { position: absolute; top: 8px; bottom: 8px; left: 0; width: 4px; margin-left: -2px; border-radius: 4px; background: var(--inchiostro); will-change: transform; }
+.gioco-fumetto {
+  position: absolute; z-index: 2; pointer-events: none; transform: translate(-50%, 0);
+  font: 500 1.05rem var(--sans); color: var(--inchiostro); animation: sale .9s var(--curva) forwards;
+}
+@keyframes sale { from { opacity: 0; transform: translate(-50%, 8px) scale(.7); } 25% { opacity: 1; transform: translate(-50%, -6px) scale(1.1); } to { opacity: 0; transform: translate(-50%, -46px) scale(1); } }
+.gioco-coriandolo {
+  position: absolute; left: 50%; top: 55%; width: 10px; height: 10px; border-radius: 3px; background: var(--c); pointer-events: none;
+  animation: coriandolo 1.4s cubic-bezier(.2, .7, .4, 1) forwards;
+}
+@keyframes coriandolo {
+  0% { transform: translate(0, 0) rotate(0) scale(.4); opacity: 1; }
+  60% { opacity: 1; }
+  100% { transform: translate(var(--x), calc(var(--y) + 260px)) rotate(var(--r)) scale(1); opacity: 0; }
+}
+.gioco-lavoro.festa canvas { animation: battito .9s var(--curva) 2; }
+@keyframes battito { 0%, 100% { transform: scale(1); } 30% { transform: scale(1.08); } 55% { transform: scale(.98); } }
 .gioco-punto { width: 100%; margin-top: 18px; min-height: 64px; font-size: 1.1rem; touch-action: manipulation; user-select: none; }
 .gioco-messaggio { margin-top: 14px; min-height: 1.6em; color: var(--tenue); }
 
@@ -287,16 +309,13 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .parola { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
 .parola > span { display: inline-block; transform: translateY(110%); transition: transform 1s var(--curva); transition-delay: calc(var(--i) * 60ms); }
 .titolo-visibile .parola > span { transform: none; }
-.rivela { clip-path: inset(100% 0 0 0 round var(--raggio)); transition: clip-path 1.2s var(--curva); transition-delay: var(--ritardo, 0s); }
-.rivela.visibile { clip-path: inset(0 0 0 0 round var(--raggio)); }
-.rivela img { transition: scale 1.6s var(--curva); }
-.rivela:not(.visibile) img { scale: 1.35; }
+.rivela { opacity: 0; transform: translate3d(0, 48px, 0) scale(.97); transition: opacity 1s var(--curva), transform 1.1s var(--curva); transition-delay: var(--ritardo, 0s); }
+.rivela.visibile { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .entra, .parola > span, .rivela { opacity: 1; transform: none; clip-path: none; transition: none; }
+  .entra, .parola > span, .rivela { opacity: 1; transform: none; transition: none; }
   .nastro-traccia, .suggerimento::after { animation: none; }
-  .foto img { scale: 1; }
 }
 
 /* Tablet e telefono: niente scorrimento agganciato, foto in fila da sfogliare */
@@ -319,7 +338,7 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
   }
   .categoria-foto::-webkit-scrollbar { display: none; }
   .foto, .foto-grande { flex: none; width: min(72vw, 380px); height: auto; aspect-ratio: 4 / 5; scroll-snap-align: start; }
-  .foto img { scale: 1; }
+  .foto img { transform: none; }
   .editor-anteprima { position: static; max-width: 560px; }
   .passi { grid-template-columns: 1fr; }
 }
