@@ -108,16 +108,16 @@
         }
       } else {
         ritaglia(c, z);
-        c.fillStyle = c.createPattern(Trama.motivo(hex, 9.5 * s), "repeat");
+        c.fillStyle = c.createPattern(Trama.motivo(hex, 7.5 * s), "repeat");
         c.fillRect(0, 0, W, H);
         spazio(c);
         if (z.pompon) {
           const rnd = Trama.casuale(5);
-          c.fillStyle = Trama.tono(hex, -0.1); c.fillRect(70, 10, 60, 60);
+          c.fillStyle = Trama.tono(hex, 0.02); c.fillRect(70, 10, 60, 60);
           c.lineWidth = 1.2;
           for (let i = 0; i < 220; i++) {
             const a = rnd() * Math.PI * 2, d = rnd() * 22;
-            c.strokeStyle = Trama.tono(hex, (rnd() - 0.4) * 0.6);
+            c.strokeStyle = Trama.tono(hex, (rnd() - 0.45) * 0.25);
             c.beginPath();
             c.moveTo(100 + Math.cos(a) * d, 38 + Math.sin(a) * d);
             c.lineTo(100 + Math.cos(a) * (d + 5), 38 + Math.sin(a) * (d + 5));
@@ -125,8 +125,8 @@
           }
         }
         if (z.coste) {
-          c.fillStyle = "rgba(0,0,0,.12)"; c.fillRect(20, 128, 160, 44);
-          c.strokeStyle = Trama.tono(hex, -0.5); c.globalAlpha = 0.5; c.lineWidth = 1.6;
+          c.fillStyle = "rgba(0,0,0,.05)"; c.fillRect(20, 128, 160, 44);
+          c.strokeStyle = Trama.tono(hex, -0.25); c.globalAlpha = 0.35; c.lineWidth = 1.2;
           for (let x = 26; x < 180; x += 7) { c.beginPath(); c.moveTo(x, 128); c.lineTo(x + 0.5, 172); c.stroke(); }
         }
       }
@@ -136,10 +136,10 @@
     c.save();
     c.globalCompositeOperation = "source-atop";
     const g = c.createRadialGradient(ox + 70 * s, oy + 50 * s, 0, ox + 100 * s, oy + 110 * s, 140 * s);
-    g.addColorStop(0, "rgba(255,255,255,.16)"); g.addColorStop(0.6, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.28)");
+    g.addColorStop(0, "rgba(255,255,255,.08)"); g.addColorStop(0.6, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.1)");
     c.fillStyle = g; c.fillRect(0, 0, W, H);
     spazio(c);
-    c.fillStyle = "rgba(0,0,0,.25)";
+    c.fillStyle = "rgba(0,0,0,.1)";
     if (stato.prodotto === "berretta") c.fillRect(20, 126, 160, 4);
     if (stato.prodotto === "sciarpotto") c.fill(P("M44 86c36-24 76-24 112 0l-3 7c-34-20-72-20-106 0Z"));
     if (stato.prodotto === "borsa") c.fillRect(30, 95, 140, 3);
@@ -168,23 +168,17 @@
   }
 
   // Il nuovo colore sale dal basso verso l'alto, riga dopo riga
-  function transizione(prima, zona) {
+  // Cambio colore con una breve dissolvenza: leggera e senza ridisegnare la trama
+  function transizione(prima) {
     cancelAnimationFrame(anim);
     if (!moto || !prima) return mostra();
-    const inizio = performance.now(), durata = 420, riga = 9.5 * s * 0.8;
+    const inizio = performance.now(), durata = 260;
     const passo = (t) => {
-      const k = Math.min((t - inizio) / durata, 1), e = 1 - Math.pow(1 - k, 3);
-      const y = Math.floor((H * (1 - e)) / riga) * riga;
+      const k = Math.min((t - inizio) / durata, 1);
       ctx.clearRect(0, 0, W, H);
-      ctx.drawImage(base, 0, 0);
-      if (y > 0) {
-        ctx.save();
-        if (zona) ritaglia(ctx, zona);
-        ctx.beginPath(); ctx.rect(0, 0, W, y); ctx.clip();
-        ctx.clearRect(0, 0, W, y);
-        ctx.drawImage(prima, 0, 0);
-        ctx.restore();
-      }
+      ctx.globalAlpha = 1; ctx.drawImage(prima, 0, 0);
+      ctx.globalAlpha = 1 - Math.pow(1 - k, 2); ctx.drawImage(base, 0, 0);
+      ctx.globalAlpha = 1;
       if (k < 1) anim = requestAnimationFrame(passo); else mostra();
     };
     anim = requestAnimationFrame(passo);
@@ -349,7 +343,7 @@
   let n = 0;
   (function prepara() {
     if (n >= COLORI.length || !W) { if (!W) setTimeout(prepara, 500); return; }
-    Trama.motivo(COLORI[n++].valore, 9.5 * s);
+    Trama.motivo(COLORI[n++].valore, 7.5 * s);
     inAnticipo(prepara);
   })();
 })();

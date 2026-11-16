@@ -1,4 +1,4 @@
-// Trama di maglia disegnata su canvas: usata dall'editor e dal mini gioco.
+// Trama di maglia disegnata su canvas, usata dall'editor.
 (function () {
   function rgb(hex) {
     const n = parseInt(hex.slice(1), 16);
@@ -12,35 +12,26 @@
     return () => (seme = (seme * 16807) % 2147483647) / 2147483647;
   }
 
-  function gamba(ctx, cx, cy, rx, ry, rot, colore, v) {
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(rot);
-    const g = ctx.createLinearGradient(-rx, -ry, rx, ry);
-    g.addColorStop(0, tono(colore, 0.3 + v));
-    g.addColorStop(0.45, tono(colore, v));
-    g.addColorStop(1, tono(colore, -0.32 + v));
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = tono(colore, -0.25 + v);
+  // Maglia in stile piatto: due "gambe" a capsula che formano una V, poco contrasto, un velo di luce sul lato sinistro.
+  function gamba(ctx, x1, y1, x2, y2, larg, colore, v) {
+    ctx.lineCap = "round";
+    ctx.strokeStyle = tono(colore, v);
+    ctx.lineWidth = larg;
+    ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    ctx.strokeStyle = tono(colore, 0.14 + v);
     ctx.globalAlpha = 0.35;
-    ctx.lineWidth = Math.max(0.6, rx * 0.12);
-    for (const f of [-0.45, 0.05, 0.5]) {
-      ctx.beginPath();
-      ctx.moveTo(rx * f, -ry * 0.75);
-      ctx.quadraticCurveTo(rx * (f + 0.25), 0, rx * f * 0.5, ry * 0.8);
-      ctx.stroke();
-    }
-    ctx.restore();
+    ctx.lineWidth = larg * 0.35;
+    const sx = x1 < x2 ? -larg * 0.15 : -larg * 0.15;
+    ctx.beginPath(); ctx.moveTo(x1 + sx, y1); ctx.lineTo(x2 + sx, y2 - larg * 0.2); ctx.stroke();
+    ctx.globalAlpha = 1;
   }
 
-  // Una maglia a V nella cella (x, y), larga s e alta s * 0.8
+  // Una maglia a V nella cella (x, y), larga s e alta s * 0.8; le V si incastrano con la riga sopra
   function punto(ctx, x, y, s, colore, v = 0) {
-    const sh = s * 0.8;
-    gamba(ctx, x + s * 0.3, y + sh * 0.5, s * 0.2, sh * 0.78, 0.62, colore, v);
-    gamba(ctx, x + s * 0.7, y + sh * 0.5, s * 0.2, sh * 0.78, -0.62, colore, v);
+    const sh = s * 0.8, larg = s * 0.36;
+    const cx = x + s / 2, alto = y - sh * 0.05, basso = y + sh * 0.92;
+    gamba(ctx, x + s * 0.22, alto, cx - s * 0.03, basso, larg, colore, v + 0.02);
+    gamba(ctx, x + s * 0.78, alto, cx + s * 0.03, basso, larg, colore, v - 0.04);
   }
 
   // Piastrella ripetibile: poche decine di maglie invece di migliaia.
@@ -54,7 +45,7 @@
     const rnd = casuale(7), j = [];
     for (let i = 0; i < COL * RIG * 3; i++) j.push(rnd() - 0.5);
     const kx = W / COL, ky = H / RIG;
-    ctx.fillStyle = tono(colore, -0.55);
+    ctx.fillStyle = tono(colore, -0.16);
     ctx.fillRect(0, 0, W, H);
     for (let r = -1; r <= RIG; r++) {
       for (let k = -1; k <= COL; k++) {
