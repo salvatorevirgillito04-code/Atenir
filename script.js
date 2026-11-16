@@ -91,8 +91,6 @@ function disegnaFilo() {
   lunghezzaFilo = filo.getTotalLength();
   filo.style.strokeDasharray = `${lunghezzaFilo}`;
 }
-const collage = [...document.querySelectorAll("[data-velocita]")];
-const fotoCollezione = [...document.querySelectorAll(".categoria .foto")].map((el) => ({ el, img: el.querySelector("img"), centro: 0 }));
 let distanza = 0, inizioCollezione = 0, altezzaPagina = 0;
 
 // Le misure si prendono solo quando cambia l'impaginazione, mai durante lo scroll
@@ -101,16 +99,10 @@ function impagina() {
     traccia.style.transform = "translate3d(0,0,0)";
     distanza = Math.max(0, traccia.scrollWidth - innerWidth);
     collezione.style.height = `${distanza + innerHeight}px`;
-    fotoCollezione.forEach((f) => {
-      let x = 0, n = f.el;
-      while (n && n !== traccia) { x += n.offsetLeft; n = n.offsetParent; }
-      f.centro = x + f.el.offsetWidth / 2;
-    });
   } else {
     distanza = 0;
     collezione.style.height = "";
     traccia.style.transform = "";
-    fotoCollezione.forEach((f) => { f.img.style.transform = ""; });
   }
   disegnaFilo();
   inizioCollezione = collezione.offsetTop;
@@ -130,18 +122,10 @@ function disegnaScroll() {
   const x = 18 + avanz * (larghezzaFilo - 36);
   filo.style.strokeDashoffset = (lunghezzaFilo * (1 - x / (larghezzaFilo + PASSO))).toFixed(1);
   gomitolo.style.transform = `translate3d(${x.toFixed(1)}px,${(ondaY(x) - 16).toFixed(1)}px,0) rotate(${(x / 16 * 57.3).toFixed(1)}deg) scale(${(1 - avanz * 0.3).toFixed(3)})`;
-  if (moto && y < innerHeight * 1.2) collage.forEach((el) => { el.style.translate = `0 ${(y * +el.dataset.velocita).toFixed(1)}px`; });
   if (!distanza) return;
   const p = Math.min(Math.max((y - inizioCollezione) / distanza, 0), 1);
   const dx = -p * distanza;
   traccia.style.transform = `translate3d(${dx.toFixed(1)}px,0,0)`;
-  if (!moto || p <= 0 || p >= 1) return;
-  const meta = innerWidth / 2;
-  fotoCollezione.forEach((f) => {
-    const sx = f.centro + dx;
-    if (sx < -innerWidth * 0.5 || sx > innerWidth * 1.5) return;
-    f.img.style.transform = `translate3d(${((sx - meta) * -0.06).toFixed(1)}px,0,0) scale(1.12)`;
-  });
 }
 addEventListener("scroll", suScroll, { passive: true });
 addEventListener("resize", impagina);
@@ -173,7 +157,7 @@ if (moto && "IntersectionObserver" in window) {
       osserva(el, "visibile");
     });
   // foto e tele: si aprono come una tenda
-  document.querySelectorAll(".collage-foto, .categoria-foto .foto, .editor-anteprima").forEach((el, i) => {
+  document.querySelectorAll(".editor-anteprima").forEach((el, i) => {
     el.classList.add("rivela");
     el.style.setProperty("--ritardo", `${(i % 3) * 0.12}s`);
     osserva(el, "visibile", "0%");
