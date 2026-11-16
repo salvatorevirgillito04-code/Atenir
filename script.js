@@ -91,7 +91,7 @@ function disegnaFilo() {
   lunghezzaFilo = filo.getTotalLength();
   filo.style.strokeDasharray = `${lunghezzaFilo}`;
 }
-let distanza = 0, inizioCollezione = 0, altezzaPagina = 0;
+let distanza = 0, inizioCollezione = 0;
 
 // Le misure si prendono solo quando cambia l'impaginazione, mai durante lo scroll
 function impagina() {
@@ -106,7 +106,6 @@ function impagina() {
   }
   disegnaFilo();
   inizioCollezione = collezione.offsetTop;
-  altezzaPagina = document.documentElement.scrollHeight - innerHeight;
   disegnaScroll();
 }
 
@@ -118,16 +117,22 @@ function suScroll() {
 }
 function disegnaScroll() {
   const y = scrollY;
-  const avanz = altezzaPagina > 0 ? Math.min(y / altezzaPagina, 1) : 0;
-  const x = 18 + avanz * (larghezzaFilo - 36);
-  filo.style.strokeDashoffset = (lunghezzaFilo * (1 - x / (larghezzaFilo + PASSO))).toFixed(1);
-  gomitolo.style.transform = `translate3d(${x.toFixed(1)}px,${(ondaY(x) - 16).toFixed(1)}px,0) rotate(${(x / 16 * 57.3).toFixed(1)}deg) scale(${(1 - avanz * 0.3).toFixed(3)})`;
+  // fondo pagina misurato ogni volta: sul telefono la barra del browser cambia l'altezza dello schermo
+  const fondo = document.documentElement.scrollHeight - (window.visualViewport ? visualViewport.height : innerHeight);
+  const avanz = fondo > 2 ? (y >= fondo - 2 ? 1 : Math.min(Math.max(y / fondo, 0), 1)) : 0;
+  // il gomitolo si rimpicciolisce mentre il filo si consuma; il suo bordo tocca esattamente i due lati dello schermo
+  const scala = 1 - avanz * 0.3, meta = 13.6 * scala; // 13.6 px = raggio della pallina disegnata (17/40 di 32 px)
+  const x = meta + avanz * (larghezzaFilo - 2 * meta);
+  const fineFilo = Math.ceil((larghezzaFilo + PASSO) / PASSO) * PASSO;
+  filo.style.strokeDashoffset = avanz === 1 ? "0" : (lunghezzaFilo * (1 - x / fineFilo)).toFixed(1);
+  gomitolo.style.transform = `translate3d(${x.toFixed(1)}px,${(ondaY(x) - 16).toFixed(1)}px,0) rotate(${(x / 16 * 57.3).toFixed(1)}deg) scale(${scala.toFixed(3)})`;
   if (!distanza) return;
   const p = Math.min(Math.max((y - inizioCollezione) / distanza, 0), 1);
   const dx = -p * distanza;
   traccia.style.transform = `translate3d(${dx.toFixed(1)}px,0,0)`;
 }
 addEventListener("scroll", suScroll, { passive: true });
+window.visualViewport?.addEventListener("resize", suScroll);
 addEventListener("resize", impagina);
 largo.addEventListener("change", impagina);
 addEventListener("load", impagina);
