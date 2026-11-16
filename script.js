@@ -177,134 +177,35 @@ if (moto && "IntersectionObserver" in window) {
   }, { passive: true });
 }
 
-// ----- Foto: la cucitura che scopre il prodotto -----
-// porta un colore qualsiasi al colore più vicino della palette di Atenir
-function hsl([r, g, b]) {
-  r /= 255; g /= 255; b /= 255;
-  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
-  if (!d) return [0, 0, l];
-  const s = d / (1 - Math.abs(2 * l - 1));
-  let h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
-  return [(h * 60 + 360) % 360, s, l];
-}
-const rgbDi = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-function piuVicino(rgb) {
-  const [h, s, l] = hsl(rgb);
-  const neutri = ["Panna", "Grigio melange", "Antracite"];
-  const candidati = COLORI.filter((c) => (s < 0.12) === neutri.includes(c.nome));
-  let meglio = candidati[0], dist = Infinity;
-  for (const c of candidati) {
-    const [h2, s2, l2] = hsl(rgbDi(c.valore));
-    const dh = Math.min(Math.abs(h - h2), 360 - Math.abs(h - h2)) / 180;
-    const d = s < 0.12 ? Math.abs(l - l2) : dh * 2 + Math.abs(l - l2) * 0.6 + Math.abs(s - s2) * 0.3;
-    if (d < dist) { dist = d; meglio = c; }
-  }
-  return meglio.valore;
-}
-
-function colorePrincipale(img) {
-  // la tinta che compare di più tra i pixel vivaci (12 spicchi di colore); se la foto è quasi grigia, un neutro
-  try {
-    const c = document.createElement("canvas");
-    c.width = c.height = 32;
-    const x = c.getContext("2d", { willReadFrequently: true });
-    x.drawImage(img, 0, 0, 32, 32);
-    const d = x.getImageData(0, 0, 32, 32).data;
-    const spicchi = Array.from({ length: 12 }, () => ({ peso: 0, r: 0, g: 0, b: 0 }));
-    let vivaci = 0, totale = 0, lum = 0;
-    for (let i = 0; i < d.length; i += 4) {
-      const px = [d[i], d[i + 1], d[i + 2]], [h, s, l] = hsl(px);
-      totale++; lum += l;
-      if (s < 0.3 || l < 0.12 || l > 0.9) continue;
-      vivaci++;
-      const sp = spicchi[Math.floor(h / 30) % 12], p = s;
-      sp.peso += p; sp.r += px[0] * p; sp.g += px[1] * p; sp.b += px[2] * p;
-    }
-    if (vivaci < totale * 0.1) return piuVicino([lum / totale * 255, lum / totale * 255, lum / totale * 255]);
-    const top = spicchi.reduce((a, b) => (b.peso > a.peso ? b : a));
-    return piuVicino([top.r / top.peso, top.g / top.peso, top.b / top.peso]);
-  } catch { return "#c9c5bc"; }
-}
-
-// Un filo nel colore del prodotto cuce a punto filza il contorno della foto, guidato da un ago.
-// Mentre cuce, la foto si scopre a partire dall'angolo dove inizia il filo. La foto non si muove mai.
-const NS = "http://www.w3.org/2000/svg";
-let numeroCucitura = 0;
-function rettangoloArrotondato(w, h, m, r) {
-  // parte dall'angolo in alto a sinistra e gira in senso orario
-  const x0 = m, y0 = m, x1 = w - m, y1 = h - m;
-  return `M${x0 + r} ${y0}H${x1 - r}A${r} ${r} 0 0 1 ${x1} ${y0 + r}V${y1 - r}A${r} ${r} 0 0 1 ${x1 - r} ${y1}` +
-    `H${x0 + r}A${r} ${r} 0 0 1 ${x0} ${y1 - r}V${y0 + r}A${r} ${r} 0 0 1 ${x0 + r} ${y0}Z`;
-}
-
-function preparaCucitura(cornice) {
-  const img = cornice.querySelector("img");
-  const scelto = COLORI.find((c) => c.nome === img.dataset.filato);
-  const colore = scelto ? scelto.valore : null;
-  img.style.clipPath = "polygon(0 0,0 0,0 0)";
-  return { cornice, img, colore };
-}
-
-function cuci(t) {
-  const { cornice, img } = t;
-  const w = cornice.clientWidth, h = cornice.clientHeight;
-  const colore = t.colore || colorePrincipale(img);
-  const id = `cucitura-${++numeroCucitura}`;
-  const svg = document.createElementNS(NS, "svg");
-  svg.setAttribute("class", "cucitura");
-  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-  svg.setAttribute("aria-hidden", "true");
-  const d = rettangoloArrotondato(w, h, 10, 12);
-  svg.innerHTML = `
-    <defs><mask id="${id}" maskUnits="userSpaceOnUse"><path d="${d}" fill="none" stroke="#fff" stroke-width="10"/></mask></defs>
-    <path class="cucitura-alone" d="${d}" mask="url(#${id})"/>
-    <path class="cucitura-filo" d="${d}" stroke="${colore}" mask="url(#${id})"/>
-    <circle class="cucitura-ago" r="4.5" fill="${colore}"/>`;
-  cornice.appendChild(svg);
-  const guida = svg.querySelector("mask path"), ago = svg.querySelector("circle");
-  const L = guida.getTotalLength();
-  guida.style.strokeDasharray = `${L}`;
-  // la foto si scopre a ventaglio dal centro, seguendo l'ago: compare solo dove il filo è già passato
-  const cx = w / 2, cy = h / 2, R = Math.hypot(w, h);
-  const p0 = guida.getPointAtLength(0), a0 = Math.atan2(p0.y - cy, p0.x - cx);
-  const ventaglio = (fino) => {
-    const punti = [`${cx}px ${cy}px`];
-    for (let a = 0; a < fino; a += 0.12) punti.push(`${(cx + R * Math.cos(a0 + a)).toFixed(1)}px ${(cy + R * Math.sin(a0 + a)).toFixed(1)}px`);
-    punti.push(`${(cx + R * Math.cos(a0 + fino)).toFixed(1)}px ${(cy + R * Math.sin(a0 + fino)).toFixed(1)}px`);
-    return `polygon(${punti.join(",")})`;
-  };
-  const durata = 650, inizio = performance.now();
-  const passo = (ora) => {
-    const k = Math.min((ora - inizio) / durata, 1);
-    const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
-    guida.style.strokeDashoffset = `${L * (1 - e)}`;
-    const p = guida.getPointAtLength(L * e);
-    ago.setAttribute("cx", p.x.toFixed(1)); ago.setAttribute("cy", p.y.toFixed(1));
-    const giro = e >= 0.999 ? Math.PI * 2 : (Math.atan2(p.y - cy, p.x - cx) - a0 + Math.PI * 4) % (Math.PI * 2);
-    img.style.clipPath = e < 0.01 ? "polygon(0 0,0 0,0 0)" : ventaglio(giro);
-    if (k < 1) return requestAnimationFrame(passo);
-    img.style.clipPath = "";
-    svg.classList.add("finita");
-    setTimeout(() => svg.remove(), 450);
-  };
-  requestAnimationFrame(passo);
-}
-
+// ----- Foto: un pannello nel colore del filato si ritira e scopre il prodotto -----
+// La foto resta ferma: si muove solo il pannello che la copre. Nella stessa fila le foto partono una dopo l'altra.
+const coloreFilato = (img) => (COLORI.find((c) => c.nome === img.dataset.filato) || {}).valore || "#d9d4ca";
+const cornici = [...document.querySelectorAll(".collage-foto, .categoria .foto")];
+cornici.forEach((cornice) => {
+  const velo = document.createElement("span");
+  velo.className = "velo";
+  velo.setAttribute("aria-hidden", "true");
+  velo.style.setProperty("--velo", coloreFilato(cornice.querySelector("img")));
+  cornice.appendChild(velo);
+});
 if (moto && "IntersectionObserver" in window) {
-  const cuciture = new Map();
+  document.documentElement.classList.add("con-veli");
+  const scopri = (cornice) => {
+    const img = cornice.querySelector("img");
+    const pronta = img.complete && img.naturalWidth ? Promise.resolve() : (img.decode ? img.decode().catch(() => {}) : Promise.resolve());
+    Promise.race([pronta, new Promise((r) => setTimeout(r, 600))]).then(() => cornice.classList.add("scoperta"));
+  };
   const osservaFoto = new IntersectionObserver((voci) => {
     voci.forEach((v) => {
       if (!v.isIntersecting) return;
-      const t = cuciture.get(v.target);
       osservaFoto.unobserve(v.target);
-      const pronta = t.img.complete && t.img.naturalWidth ? Promise.resolve() : (t.img.decode ? t.img.decode().catch(() => {}) : Promise.resolve());
-      Promise.race([pronta, new Promise((r) => setTimeout(r, 500))]).then(() => cuci(t));
+      // posizione nella sua fila: 0, 1, 2 → piccolo ritardo a cascata
+      const fila = [...v.target.parentElement.children].filter((x) => x.matches(".collage-foto, .foto"));
+      v.target.style.setProperty("--ritardo-velo", `${fila.indexOf(v.target) * 110}ms`);
+      scopri(v.target);
     });
   }, { threshold: 0.2 });
-  document.querySelectorAll(".categoria .foto").forEach((cornice) => {
-    cuciture.set(cornice, preparaCucitura(cornice));
-    osservaFoto.observe(cornice);
-  });
+  cornici.forEach((c) => osservaFoto.observe(c));
 }
 
 // ----- Puntatore: cerchio che segue il mouse e bottoni magnetici -----
