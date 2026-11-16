@@ -1,6 +1,6 @@
 # Atenir · sito vetrina
 
-Sito statico (HTML, CSS, JS, nessuna dipendenza) per Atenir: berrette, sciarpotti e borsette all'uncinetto.
+Sito statico (HTML, CSS, JS, nessuna dipendenza) per Atenir: berrette, sciarpotti e borse all'uncinetto.
 Online su GitHub Pages dal ramo `gh-pages`.
 
 ## Contatti
@@ -13,8 +13,9 @@ Le foto sono in `assets/foto/` in formato WebP (leggero), larghe al massimo 900 
 ## Struttura
 - `index.html` – contenuti
 - `styles.css` – stile
-- `maglia.js` – disegna la trama di maglia nei colori scelti
-- `script.js` – contatti, configuratore, animazioni
+- `script.js` – contatti, collezione, gomitolo che segue lo scorrimento, cucitura delle foto, animazioni
+
+Il colore del filo che cuce ogni foto è scritto nell'attributo `data-filato` della foto in `index.html`.
 
 ## Crediti foto
 - `assets/foto/berretta-2.webp`: Pezibear su Pixabay (licenza Pixabay, uso commerciale libero).

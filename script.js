@@ -38,10 +38,7 @@ document.querySelectorAll("[data-link]").forEach((a) => {
 });
 document.getElementById("anno").textContent = new Date().getFullYear();
 
-// "Disegna la tua" porta all'editor con il pezzo giusto
-document.querySelectorAll("[data-editor]").forEach((a) =>
-  a.addEventListener("click", () => window.editorProdotto?.(a.dataset.editor))
-);
+;
 
 // ----- Nastro -----
 const parole = ["Berrette", "Sciarpotti", "Borse", "Fatto a mano", "Su ordinazione", "Colori a scelta"];
@@ -154,19 +151,13 @@ if (moto && "IntersectionObserver" in window) {
     osserva(t, "titolo-visibile");
   });
   // blocchi di testo in sequenza
-  document.querySelectorAll(".hero-sotto, .hero-azioni, .intro, .passo, .chi-sono-corpo > *, .segui p, .segui-handle, .editor-comandi > *")
+  document.querySelectorAll(".hero-sotto, .hero-azioni, .intro, .passo, .chi-sono-corpo > *, .segui p, .segui-handle")
     .forEach((el) => {
       el.classList.add("entra");
       const fratelli = [...el.parentElement.children];
       el.style.setProperty("--ritardo", `${Math.min(fratelli.indexOf(el), 5) * 0.08}s`);
       osserva(el, "visibile");
     });
-  // foto e tele: si aprono come una tenda
-  document.querySelectorAll(".editor-anteprima").forEach((el, i) => {
-    el.classList.add("rivela");
-    el.style.setProperty("--ritardo", `${(i % 3) * 0.12}s`);
-    osserva(el, "visibile", "0%");
-  });
 
   // nastro: accelera e cambia verso seguendo lo scroll
   const nastro = document.getElementById("nastro");

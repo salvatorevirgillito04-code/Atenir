@@ -169,52 +169,6 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 }
 .foto:hover::before, .foto:focus-visible::before, .foto:active::before { opacity: 1; transform: scale(1); }
 
-/* Editor */
-.editor { background: var(--superficie); }
-.editor-testa { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 24px 48px; }
-.editor-testa .intro { margin: 0; }
-.editor-corpo > * { min-width: 0; }
-.editor-corpo { margin-top: clamp(40px, 5vw, 72px); display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(32px, 5vw, 88px); align-items: start; }
-.editor-anteprima { margin: 0; position: sticky; top: 96px; }
-.editor-anteprima canvas { width: 100%; aspect-ratio: 1; background: var(--fondo); border-radius: 28px; touch-action: manipulation; }
-.editor-anteprima figcaption { margin-top: 14px; color: var(--tenue); font-size: .95rem; }
-.scelta { border: 0; padding: 0; margin: 0 0 30px; min-width: 0; }
-.scelta legend { padding: 0; margin-bottom: 12px; font-weight: 500; }
-.scelta legend span { color: var(--tenue); font-weight: 400; }
-.segmenti { display: inline-flex; padding: 5px; gap: 4px; border-radius: 999px; background: var(--fondo); position: relative; }
-.segmenti button {
-  position: relative; z-index: 1; min-height: 46px; padding: 0 22px; border: 0; border-radius: 999px;
-  background: transparent; font-weight: 500; font-size: .98rem; color: var(--tenue); cursor: pointer; transition: color .3s ease;
-}
-.segmenti button[aria-checked="true"] { color: #fff; }
-.cursore-segmento {
-  position: absolute; top: 5px; bottom: 5px; left: 0; border-radius: 999px; background: var(--inchiostro);
-  transition: transform .5s var(--curva), width .5s var(--curva);
-}
-.campioni { display: flex; flex-wrap: wrap; gap: 10px; }
-.campione {
-  width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--c); cursor: pointer;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); transition: transform .35s var(--curva);
-}
-.campione:hover { transform: scale(1.12); }
-.campione[aria-checked="true"] { outline: 1.5px solid var(--inchiostro); outline-offset: 4px; }
-.zone { display: flex; flex-wrap: wrap; gap: 8px; }
-.zona {
-  display: inline-flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 16px 0 10px;
-  border: 0; border-radius: 999px; background: var(--fondo); cursor: pointer; font-size: .93rem;
-  transition: background-color .25s ease, transform .3s var(--curva);
-}
-.zona:hover { background: #fff; transform: translateY(-2px); }
-.zona i { width: 22px; height: 22px; border-radius: 50%; background: var(--c); box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); transition: background-color .4s ease; }
-.strumenti { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
-.strumento {
-  min-height: 42px; padding: 0 18px; border-radius: 999px; border: 0; cursor: pointer; font-size: .93rem;
-  background: transparent; box-shadow: inset 0 0 0 1.5px rgba(21,21,21,.25); transition: box-shadow .25s ease, background-color .25s ease;
-}
-.strumento:hover { box-shadow: inset 0 0 0 1.5px var(--inchiostro); background: var(--fondo); }
-.editor-azioni { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
-.nota { margin-top: 14px; min-height: 1.6em; color: var(--tenue); font-size: .95rem; }
-
 /* Come si ordina */
 .passi { margin-top: clamp(48px, 6vw, 80px); display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 4vw, 64px); }
 .passo { padding-top: 26px; position: relative; }
@@ -286,7 +240,7 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 @media (max-width: 960px) {
   .testata-nav { display: none; }
   .testata-ig { margin-left: auto; }
-  .hero, .editor-corpo, .chi-sono { grid-template-columns: 1fr; }
+  .hero, .chi-sono { grid-template-columns: 1fr; }
   .hero { min-height: 0; }
   .hero-collage { max-width: 620px; width: 100%; justify-self: center; }
   .collezione { padding: clamp(88px, 11vw, 160px) 0; }
@@ -302,36 +256,9 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
   }
   .categoria-foto::-webkit-scrollbar { display: none; }
   .foto, .foto-grande { flex: none; width: min(72vw, 380px); height: auto; aspect-ratio: 4 / 5; scroll-snap-align: start; }
-  .editor-anteprima { position: static; max-width: 560px; }
   .passi { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
-  .segmenti { display: flex; }
-  .segmenti button { flex: 1; min-width: 0; padding: 0 6px; min-height: 42px; font-size: .93rem; }
-  .piede p { margin-left: 0; }
-
-  /* Editor su telefono: compatto, il disegno resta in vista mentre scegli */
-  .editor { padding-top: 64px; padding-bottom: 64px; }
-  .editor-testa .intro { font-size: 1rem; }
-  .editor-corpo { margin-top: 24px; gap: 18px; }
   .testata-logo img { width: 88px; }
-  .editor-anteprima {
-    position: sticky; top: 70px; z-index: 5; max-width: none;
-    display: flex; align-items: center; gap: 12px;
-    margin: 0 calc(var(--margine) * -1); padding: 8px var(--margine) 10px;
-    background: var(--superficie);
-  }
-  .editor-anteprima canvas { width: min(42vw, 30svh); flex: none; border-radius: 18px; }
-  .editor-anteprima figcaption { margin: 0; font-size: .88rem; line-height: 1.4; }
-  .scelta { margin-bottom: 18px; }
-  .scelta legend { margin-bottom: 8px; font-size: .95rem; }
-  .campioni { gap: 8px; }
-  .campione { width: 34px; height: 34px; }
-  .campione[aria-checked="true"] { outline-offset: 3px; }
-  .zone { gap: 6px; }
-  .zona { min-height: 36px; font-size: .86rem; padding: 0 12px 0 7px; gap: 7px; }
-  .zona i { width: 18px; height: 18px; }
-  .strumenti { gap: 6px; margin-bottom: 20px; }
-  .strumento { min-height: 38px; padding: 0 14px; font-size: .88rem; }
-  .editor-azioni .bottone { width: 100%; }
+  .piede p { margin-left: 0; }
 }

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Atenir · Uncinetto fatto a mano</title>
-  <meta name="description" content="Atenir: berrette, sciarpotti e borse all'uncinetto, fatti a mano uno alla volta. Disegna il tuo modello colore per colore e ordinalo su Instagram @atenir_handmade.">
+  <meta name="description" content="Atenir: berrette, sciarpotti e borse all'uncinetto, fatti a mano uno alla volta. Scegli colori e modello e ordinalo su Instagram @atenir_handmade.">
   <meta property="og:title" content="Atenir · Uncinetto fatto a mano">
   <meta property="og:description" content="Berrette, sciarpotti e borse all'uncinetto, fatti a mano nei colori che scegli tu.">
   <meta property="og:image" content="assets/foto/sciarpotto-1.jpg">
@@ -25,7 +25,7 @@
   </a>
   <nav class="testata-nav" aria-label="Sezioni">
     <a href="#collezione">Collezione</a>
-    <a href="#crea">Crea il tuo</a>
+    <a href="#ordinare">Come ordinare</a>
     <a href="#chi-sono">Chi sono</a>
   </nav>
   <a class="testata-ig" data-link="instagram" href="#">Instagram</a>
@@ -47,7 +47,7 @@
       <h1 id="titolo-hero">Fatto a mano, pensato per durare.</h1>
       <p class="hero-sotto">Berrette, sciarpotti e borse all'uncinetto, lavorati uno alla volta nei colori che scegli tu. Nessuna produzione in serie: ogni pezzo nasce per chi lo indossa.</p>
       <div class="hero-azioni">
-        <a class="bottone" href="#crea">Crea il tuo modello</a>
+        <a class="bottone" data-link="instagram" href="#">Scrivimi su Instagram</a>
         <a class="link-freccia" href="#collezione">Vedi la collezione</a>
       </div>
     </div>
@@ -76,7 +76,7 @@
           <div class="categoria-testo">
             <h3>Berrette</h3>
             <p>A coste morbide, con il risvolto e il pompon se lo vuoi. Lana per l'inverno, cotone per le mezze stagioni.</p>
-            <a class="link-freccia" href="#crea" data-editor="berretta">Disegna la tua</a>
+            <a class="link-freccia" data-link="instagram" href="#">Chiedila su Instagram</a>
           </div>
           <div class="categoria-foto">
             <button class="foto foto-grande" data-cursore="Guarda" data-grande="assets/foto/berretta-3.webp"><img data-filato="Salvia" src="assets/foto/berretta-3.webp" alt="Berretta a coste multicolore" loading="lazy" width="554" height="554"></button>
@@ -89,7 +89,7 @@
           <div class="categoria-testo">
             <h3>Sciarpotti</h3>
             <p>Lunghi e avvolgenti, a righe o in tinta unita, con le frange. Da tenere addosso dal primo freddo fino a primavera.</p>
-            <a class="link-freccia" href="#crea" data-editor="sciarpotto">Disegna il tuo</a>
+            <a class="link-freccia" data-link="instagram" href="#">Chiedilo su Instagram</a>
           </div>
           <div class="categoria-foto">
             <button class="foto foto-grande" data-cursore="Guarda" data-grande="assets/foto/sciarpotto-1.webp"><img data-filato="Blu Atenir" src="assets/foto/sciarpotto-1.webp" alt="Sciarpotto blu a righe grigie con frange" loading="lazy" width="720" height="708"></button>
@@ -102,7 +102,7 @@
           <div class="categoria-testo">
             <h3>Borse</h3>
             <p>In fettuccia resistente, dalla pochette alla borsa a spalla. Il colore lo scegli tu, la forma la decidiamo insieme.</p>
-            <a class="link-freccia" href="#crea" data-editor="borsa">Disegna la tua</a>
+            <a class="link-freccia" data-link="instagram" href="#">Chiedila su Instagram</a>
           </div>
           <div class="categoria-foto">
             <button class="foto foto-grande" data-cursore="Guarda" data-grande="assets/foto/borsa-3.webp"><img data-filato="Girasole" src="assets/foto/borsa-3.webp" alt="Borsa gialla con nappina" loading="lazy" width="472" height="648"></button>
@@ -115,59 +115,12 @@
     </div>
   </section>
 
-  <section class="editor" id="crea" aria-labelledby="titolo-editor">
-    <div class="editor-testa">
-      <h2 id="titolo-editor">Crea il tuo, colore per colore.</h2>
-      <p class="intro">Scegli il pezzo e un colore, poi tocca una parte: nell'elenco o direttamente sul disegno.</p>
-    </div>
-
-    <div class="editor-corpo">
-      <figure class="editor-anteprima">
-        <canvas id="editor-tela" tabindex="0" role="img" aria-label="Anteprima del modello: tocca una parte per colorarla, oppure usa le frecce e Invio"></canvas>
-        <figcaption id="editor-riepilogo"></figcaption>
-      </figure>
-
-      <div class="editor-comandi">
-        <fieldset class="scelta">
-          <legend>Pezzo</legend>
-          <div class="segmenti" role="radiogroup">
-            <button type="button" role="radio" aria-checked="true" data-editor-prodotto="berretta">Berretta</button>
-            <button type="button" role="radio" aria-checked="false" data-editor-prodotto="sciarpotto">Sciarpotto</button>
-            <button type="button" role="radio" aria-checked="false" data-editor-prodotto="borsa">Borsa</button>
-          </div>
-        </fieldset>
-
-        <fieldset class="scelta">
-          <legend>Colore: <span id="editor-pennello-nome"></span></legend>
-          <div class="campioni" role="radiogroup" id="editor-pennelli"></div>
-        </fieldset>
-
-        <fieldset class="scelta">
-          <legend>Parti: tocca per colorare</legend>
-          <div class="zone" id="editor-zone"></div>
-        </fieldset>
-
-        <div class="strumenti">
-          <button type="button" class="strumento" id="editor-tinta">Tutto di un colore</button>
-          <button type="button" class="strumento" id="editor-righe">A righe</button>
-          <button type="button" class="strumento" id="editor-annulla">Annulla</button>
-        </div>
-
-        <div class="editor-azioni">
-          <a class="bottone" id="editor-instagram" href="#">Chiedi su Instagram</a>
-          <a class="bottone bottone-secondario" id="editor-whatsapp" href="#">Chiedi su WhatsApp</a>
-        </div>
-        <p class="nota" id="editor-nota" aria-live="polite"></p>
-      </div>
-    </div>
-  </section>
-
   <section class="ordinare" id="ordinare" aria-labelledby="titolo-ordinare">
     <h2 id="titolo-ordinare">Come si ordina.</h2>
     <div class="passi">
       <div class="passo">
         <h3>Scegli</h3>
-        <p>Crea il tuo modello qui sopra, oppure prendi spunto dalla collezione e dai lavori su Instagram.</p>
+        <p>Prendi spunto dalla collezione e dai lavori su Instagram, e pensa ai colori che ti piacciono.</p>
       </div>
       <div class="passo">
         <h3>Scrivimi</h3>
@@ -184,7 +137,7 @@
     <h2 id="titolo-chi-sono">Dietro Atenir.</h2>
     <div class="chi-sono-corpo">
       <p class="chi-sono-grande">Ho iniziato con un gomitolo e non ho più smesso. Atenir è il mio laboratorio: lavoro da sola e su ordinazione, quindi ogni pezzo è un po' diverso dall'altro.</p>
-      <p>Ogni lettera del logo ha un colore diverso, come i gomitoli sparsi sulla mia scrivania. Quei colori sono diventati la palette da cui puoi scegliere.</p>
+      <p>Ogni lettera del logo ha un colore diverso, come i gomitoli sparsi sulla mia scrivania. Quei colori sono il punto di partenza di ogni pezzo.</p>
       <img class="chi-sono-logo" src="assets/logo.webp" alt="Il logo di Atenir" width="480" height="257" loading="lazy">
     </div>
   </section>
@@ -213,8 +166,6 @@
   <button type="button" class="lightbox-chiudi" id="lightbox-chiudi" aria-label="Chiudi">Chiudi</button>
 </dialog>
 
-<script src="trama.js" defer></script>
 <script src="script.js" defer></script>
-<script src="editor.js" defer></script>
 </body>
 </html>
