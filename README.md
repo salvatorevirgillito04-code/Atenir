@@ -7,8 +7,8 @@ Online su GitHub Pages dal ramo `gh-pages`.
 In cima a `script.js` c'è `CONTATTI`: Instagram, TikTok, WhatsApp, email. Quelli lasciati vuoti non compaiono.
 
 ## Foto vere dei prodotti
-Metti le foto in `assets/foto/` con questi nomi: `berretta.jpg`, `sciarpotto.jpg`, `borsetta.jpg`
-(formato verticale 4:5, almeno 1200 px di altezza). Appaiono da sole al posto della trama disegnata.
+Le foto sono in `assets/foto/` in formato WebP (leggero), larghe al massimo 900 px. Per cambiarne una sostituisci il file con lo stesso nome, per esempio `berretta-1.webp`
+(meglio verticale 4:5).
 
 ## Struttura
 - `index.html` – contenuti
@@ -17,6 +17,6 @@ Metti le foto in `assets/foto/` con questi nomi: `berretta.jpg`, `sciarpotto.jpg
 - `script.js` – contatti, configuratore, animazioni
 
 ## Crediti foto
-- `assets/foto/berretta-2.jpg`: Pezibear su Pixabay (licenza Pixabay, uso commerciale libero).
-- `assets/foto/sciarpotto-2.jpg`: Maria Kovalets su Unsplash (licenza Unsplash, uso commerciale libero).
+- `assets/foto/berretta-2.webp`: Pezibear su Pixabay (licenza Pixabay, uso commerciale libero).
+- `assets/foto/sciarpotto-2.webp`: Maria Kovalets su Unsplash (licenza Unsplash, uso commerciale libero).
 - Le altre foto in `assets/foto/` sono state fornite dalla proprietaria del sito.

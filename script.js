@@ -277,7 +277,7 @@ function cuci(t) {
     punti.push(`${(cx + R * Math.cos(a0 + fino)).toFixed(1)}px ${(cy + R * Math.sin(a0 + fino)).toFixed(1)}px`);
     return `polygon(${punti.join(",")})`;
   };
-  const durata = 1500, inizio = performance.now();
+  const durata = 650, inizio = performance.now();
   const passo = (ora) => {
     const k = Math.min((ora - inizio) / durata, 1);
     const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
@@ -289,7 +289,7 @@ function cuci(t) {
     if (k < 1) return requestAnimationFrame(passo);
     img.style.clipPath = "";
     svg.classList.add("finita");
-    setTimeout(() => svg.remove(), 900);
+    setTimeout(() => svg.remove(), 450);
   };
   requestAnimationFrame(passo);
 }
@@ -302,10 +302,10 @@ if (moto && "IntersectionObserver" in window) {
       const t = cuciture.get(v.target);
       osservaFoto.unobserve(v.target);
       const pronta = t.img.complete && t.img.naturalWidth ? Promise.resolve() : (t.img.decode ? t.img.decode().catch(() => {}) : Promise.resolve());
-      Promise.race([pronta, new Promise((r) => setTimeout(r, 1500))]).then(() => cuci(t));
+      Promise.race([pronta, new Promise((r) => setTimeout(r, 500))]).then(() => cuci(t));
     });
-  }, { threshold: 0.4 });
-  document.querySelectorAll(".collage-foto, .categoria .foto").forEach((cornice, i) => {
+  }, { threshold: 0.2 });
+  document.querySelectorAll(".categoria .foto").forEach((cornice) => {
     cuciture.set(cornice, preparaCucitura(cornice));
     osservaFoto.observe(cornice);
   });
