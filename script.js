@@ -181,6 +181,128 @@ if (moto && "IntersectionObserver" in window) {
   }, { passive: true });
 }
 
+// ----- Foto: la maglia si disfa e appare il prodotto -----
+// Sopra ogni foto c'è un telo lavorato a maglia nel colore del prodotto.
+// Quando la foto entra in vista il telo si disfa, riga dopo riga dall'alto, con l'andamento avanti e indietro del lavoro vero.
+// La foto non si muove mai: cambia solo il telo che la copre, che alla fine viene tolto.
+// porta un colore qualsiasi al colore più vicino della palette di Atenir
+function hsl([r, g, b]) {
+  r /= 255; g /= 255; b /= 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+  if (!d) return [0, 0, l];
+  const s = d / (1 - Math.abs(2 * l - 1));
+  let h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [(h * 60 + 360) % 360, s, l];
+}
+const rgbDi = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
+function piuVicino(rgb) {
+  const [h, s, l] = hsl(rgb);
+  const neutri = ["Panna", "Grigio melange", "Antracite"];
+  const candidati = COLORI.filter((c) => (s < 0.12) === neutri.includes(c.nome));
+  let meglio = candidati[0], dist = Infinity;
+  for (const c of candidati) {
+    const [h2, s2, l2] = hsl(rgbDi(c.valore));
+    const dh = Math.min(Math.abs(h - h2), 360 - Math.abs(h - h2)) / 180;
+    const d = s < 0.12 ? Math.abs(l - l2) : dh * 2 + Math.abs(l - l2) * 0.6 + Math.abs(s - s2) * 0.3;
+    if (d < dist) { dist = d; meglio = c; }
+  }
+  return meglio.valore;
+}
+
+function colorePrincipale(img) {
+  // la tinta che compare di più tra i pixel vivaci (12 spicchi di colore); se la foto è quasi grigia, un neutro
+  try {
+    const c = document.createElement("canvas");
+    c.width = c.height = 32;
+    const x = c.getContext("2d", { willReadFrequently: true });
+    x.drawImage(img, 0, 0, 32, 32);
+    const d = x.getImageData(0, 0, 32, 32).data;
+    const spicchi = Array.from({ length: 12 }, () => ({ peso: 0, r: 0, g: 0, b: 0 }));
+    let vivaci = 0, totale = 0, lum = 0;
+    for (let i = 0; i < d.length; i += 4) {
+      const px = [d[i], d[i + 1], d[i + 2]], [h, s, l] = hsl(px);
+      totale++; lum += l;
+      if (s < 0.3 || l < 0.12 || l > 0.9) continue;
+      vivaci++;
+      const sp = spicchi[Math.floor(h / 30) % 12], p = s;
+      sp.peso += p; sp.r += px[0] * p; sp.g += px[1] * p; sp.b += px[2] * p;
+    }
+    if (vivaci < totale * 0.1) return piuVicino([lum / totale * 255, lum / totale * 255, lum / totale * 255]);
+    const top = spicchi.reduce((a, b) => (b.peso > a.peso ? b : a));
+    return piuVicino([top.r / top.peso, top.g / top.peso, top.b / top.peso]);
+  } catch { return "#c9c5bc"; }
+}
+
+function preparaTelo(cornice) {
+  const img = cornice.querySelector("img");
+  const tela = document.createElement("canvas");
+  tela.className = "telo";
+  tela.setAttribute("aria-hidden", "true");
+  cornice.appendChild(tela);
+  const w = cornice.clientWidth, h = cornice.clientHeight;
+  const dpr = Math.min(devicePixelRatio || 1, 1.5);
+  tela.width = Math.round(w * dpr); tela.height = Math.round(h * dpr);
+  const ctx = tela.getContext("2d");
+  const colonne = Math.max(7, Math.round(w / 34));
+  const s = tela.width / colonne, sh = s * 0.8;
+  const righe = Math.ceil(tela.height / sh) + 1;
+  // prima di sapere il colore, un telo neutro
+  ctx.fillStyle = ctx.createPattern(Trama.motivo("#cfcac0", s), "repeat");
+  ctx.fillRect(0, 0, tela.width, tela.height);
+  const colora = () => {
+    // colore del filato scritto sulla foto (data-filato), altrimenti calcolato dalla foto
+    const scelto = COLORI.find((c) => c.nome === img.dataset.filato);
+    ctx.fillStyle = ctx.createPattern(Trama.motivo(scelto ? scelto.valore : colorePrincipale(img), s), "repeat");
+    ctx.fillRect(0, 0, tela.width, tela.height);
+  };
+  const pronta = img.complete && img.naturalWidth ? Promise.resolve() : (img.decode ? img.decode().catch(() => {}) : Promise.resolve());
+  pronta.then(colora);
+  // ordine in cui le maglie si sciolgono
+  const ordine = [];
+  for (let r = 0; r < righe; r++) for (let k = 0; k < colonne; k++) ordine.push([r % 2 ? colonne - 1 - k : k, r]);
+  return { tela, ctx, s, sh, ordine, pronta, cornice };
+}
+
+function disfa(t) {
+  const { tela, ctx, s, sh, ordine } = t;
+  const durata = 1150 + ordine.length * 2, inizio = performance.now();
+  let fatte = 0;
+  ctx.globalCompositeOperation = "destination-out";
+  const passo = (ora) => {
+    const k = Math.min((ora - inizio) / durata, 1);
+    const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+    const fino = Math.floor(e * ordine.length);
+    for (; fatte < fino; fatte++) {
+      const [c, r] = ordine[fatte], x = c * s, y = r * sh;
+      ctx.beginPath();
+      ctx.ellipse(x + s * 0.3, y + sh * 0.5, s * 0.36, sh * 0.95, 0.62, 0, Math.PI * 2);
+      ctx.ellipse(x + s * 0.7, y + sh * 0.5, s * 0.36, sh * 0.95, -0.62, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    if (k < 1) requestAnimationFrame(passo);
+    else { tela.classList.add("via"); setTimeout(() => tela.remove(), 400); }
+  };
+  requestAnimationFrame(passo);
+}
+
+if (moto && "IntersectionObserver" in window) {
+  const teli = new Map();
+  const osservaFoto = new IntersectionObserver((voci) => {
+    voci.forEach((v) => {
+      if (!v.isIntersecting) return;
+      const t = teli.get(v.target);
+      osservaFoto.unobserve(v.target);
+      // aspetta la foto (al massimo un secondo e mezzo), poi disfa
+      Promise.race([t.pronta, new Promise((r) => setTimeout(r, 1500))]).then(() => setTimeout(() => disfa(t), 120));
+    });
+  }, { threshold: 0.45 });
+  document.querySelectorAll(".collage-foto, .categoria .foto").forEach((cornice) => {
+    const t = preparaTelo(cornice);
+    teli.set(cornice, t);
+    osservaFoto.observe(cornice);
+  });
+}
+
 // ----- Puntatore: cerchio che segue il mouse e bottoni magnetici -----
 if (moto && puntatoreFine) {
   const cur = document.getElementById("cursore");
