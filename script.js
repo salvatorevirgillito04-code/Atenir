@@ -181,10 +181,7 @@ if (moto && "IntersectionObserver" in window) {
   }, { passive: true });
 }
 
-// ----- Foto: la maglia si disfa e appare il prodotto -----
-// Sopra ogni foto c'è un telo lavorato a maglia nel colore del prodotto.
-// Quando la foto entra in vista il telo si disfa, riga dopo riga dall'alto, con l'andamento avanti e indietro del lavoro vero.
-// La foto non si muove mai: cambia solo il telo che la copre, che alla fine viene tolto.
+// ----- Foto: la cucitura che scopre il prodotto -----
 // porta un colore qualsiasi al colore più vicino della palette di Atenir
 function hsl([r, g, b]) {
   r /= 255; g /= 255; b /= 255;
@@ -233,72 +230,83 @@ function colorePrincipale(img) {
   } catch { return "#c9c5bc"; }
 }
 
-function preparaTelo(cornice) {
-  const img = cornice.querySelector("img");
-  const tela = document.createElement("canvas");
-  tela.className = "telo";
-  tela.setAttribute("aria-hidden", "true");
-  cornice.appendChild(tela);
-  const w = cornice.clientWidth, h = cornice.clientHeight;
-  const dpr = Math.min(devicePixelRatio || 1, 1.5);
-  tela.width = Math.round(w * dpr); tela.height = Math.round(h * dpr);
-  const ctx = tela.getContext("2d");
-  const colonne = Math.max(7, Math.round(w / 34));
-  const s = tela.width / colonne, sh = s * 0.8;
-  const righe = Math.ceil(tela.height / sh) + 1;
-  // prima di sapere il colore, un telo neutro
-  ctx.fillStyle = ctx.createPattern(Trama.motivo("#cfcac0", s), "repeat");
-  ctx.fillRect(0, 0, tela.width, tela.height);
-  const colora = () => {
-    // colore del filato scritto sulla foto (data-filato), altrimenti calcolato dalla foto
-    const scelto = COLORI.find((c) => c.nome === img.dataset.filato);
-    ctx.fillStyle = ctx.createPattern(Trama.motivo(scelto ? scelto.valore : colorePrincipale(img), s), "repeat");
-    ctx.fillRect(0, 0, tela.width, tela.height);
-  };
-  const pronta = img.complete && img.naturalWidth ? Promise.resolve() : (img.decode ? img.decode().catch(() => {}) : Promise.resolve());
-  pronta.then(colora);
-  // ordine in cui le maglie si sciolgono
-  const ordine = [];
-  for (let r = 0; r < righe; r++) for (let k = 0; k < colonne; k++) ordine.push([r % 2 ? colonne - 1 - k : k, r]);
-  return { tela, ctx, s, sh, ordine, pronta, cornice };
+// Un filo nel colore del prodotto cuce a punto filza il contorno della foto, guidato da un ago.
+// Mentre cuce, la foto si scopre a partire dall'angolo dove inizia il filo. La foto non si muove mai.
+const NS = "http://www.w3.org/2000/svg";
+let numeroCucitura = 0;
+function rettangoloArrotondato(w, h, m, r) {
+  // parte dall'angolo in alto a sinistra e gira in senso orario
+  const x0 = m, y0 = m, x1 = w - m, y1 = h - m;
+  return `M${x0 + r} ${y0}H${x1 - r}A${r} ${r} 0 0 1 ${x1} ${y0 + r}V${y1 - r}A${r} ${r} 0 0 1 ${x1 - r} ${y1}` +
+    `H${x0 + r}A${r} ${r} 0 0 1 ${x0} ${y1 - r}V${y0 + r}A${r} ${r} 0 0 1 ${x0 + r} ${y0}Z`;
 }
 
-function disfa(t) {
-  const { tela, ctx, s, sh, ordine } = t;
-  const durata = 1150 + ordine.length * 2, inizio = performance.now();
-  let fatte = 0;
-  ctx.globalCompositeOperation = "destination-out";
+function preparaCucitura(cornice) {
+  const img = cornice.querySelector("img");
+  const scelto = COLORI.find((c) => c.nome === img.dataset.filato);
+  const colore = scelto ? scelto.valore : null;
+  img.style.clipPath = "polygon(0 0,0 0,0 0)";
+  return { cornice, img, colore };
+}
+
+function cuci(t) {
+  const { cornice, img } = t;
+  const w = cornice.clientWidth, h = cornice.clientHeight;
+  const colore = t.colore || colorePrincipale(img);
+  const id = `cucitura-${++numeroCucitura}`;
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("class", "cucitura");
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  svg.setAttribute("aria-hidden", "true");
+  const d = rettangoloArrotondato(w, h, 10, 12);
+  svg.innerHTML = `
+    <defs><mask id="${id}" maskUnits="userSpaceOnUse"><path d="${d}" fill="none" stroke="#fff" stroke-width="10"/></mask></defs>
+    <path class="cucitura-alone" d="${d}" mask="url(#${id})"/>
+    <path class="cucitura-filo" d="${d}" stroke="${colore}" mask="url(#${id})"/>
+    <circle class="cucitura-ago" r="4.5" fill="${colore}"/>`;
+  cornice.appendChild(svg);
+  const guida = svg.querySelector("mask path"), ago = svg.querySelector("circle");
+  const L = guida.getTotalLength();
+  guida.style.strokeDasharray = `${L}`;
+  // la foto si scopre a ventaglio dal centro, seguendo l'ago: compare solo dove il filo è già passato
+  const cx = w / 2, cy = h / 2, R = Math.hypot(w, h);
+  const p0 = guida.getPointAtLength(0), a0 = Math.atan2(p0.y - cy, p0.x - cx);
+  const ventaglio = (fino) => {
+    const punti = [`${cx}px ${cy}px`];
+    for (let a = 0; a < fino; a += 0.12) punti.push(`${(cx + R * Math.cos(a0 + a)).toFixed(1)}px ${(cy + R * Math.sin(a0 + a)).toFixed(1)}px`);
+    punti.push(`${(cx + R * Math.cos(a0 + fino)).toFixed(1)}px ${(cy + R * Math.sin(a0 + fino)).toFixed(1)}px`);
+    return `polygon(${punti.join(",")})`;
+  };
+  const durata = 1500, inizio = performance.now();
   const passo = (ora) => {
     const k = Math.min((ora - inizio) / durata, 1);
-    const e = k < 0.5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
-    const fino = Math.floor(e * ordine.length);
-    for (; fatte < fino; fatte++) {
-      const [c, r] = ordine[fatte], x = c * s, y = r * sh;
-      ctx.beginPath();
-      ctx.ellipse(x + s * 0.3, y + sh * 0.5, s * 0.36, sh * 0.95, 0.62, 0, Math.PI * 2);
-      ctx.ellipse(x + s * 0.7, y + sh * 0.5, s * 0.36, sh * 0.95, -0.62, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    if (k < 1) requestAnimationFrame(passo);
-    else { tela.classList.add("via"); setTimeout(() => tela.remove(), 400); }
+    const e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+    guida.style.strokeDashoffset = `${L * (1 - e)}`;
+    const p = guida.getPointAtLength(L * e);
+    ago.setAttribute("cx", p.x.toFixed(1)); ago.setAttribute("cy", p.y.toFixed(1));
+    const giro = e >= 0.999 ? Math.PI * 2 : (Math.atan2(p.y - cy, p.x - cx) - a0 + Math.PI * 4) % (Math.PI * 2);
+    img.style.clipPath = e < 0.01 ? "polygon(0 0,0 0,0 0)" : ventaglio(giro);
+    if (k < 1) return requestAnimationFrame(passo);
+    img.style.clipPath = "";
+    svg.classList.add("finita");
+    setTimeout(() => svg.remove(), 900);
   };
   requestAnimationFrame(passo);
 }
 
 if (moto && "IntersectionObserver" in window) {
-  const teli = new Map();
+  const cuciture = new Map();
   const osservaFoto = new IntersectionObserver((voci) => {
     voci.forEach((v) => {
       if (!v.isIntersecting) return;
-      const t = teli.get(v.target);
+      const t = cuciture.get(v.target);
       osservaFoto.unobserve(v.target);
-      // aspetta la foto (al massimo un secondo e mezzo), poi disfa
-      Promise.race([t.pronta, new Promise((r) => setTimeout(r, 1500))]).then(() => setTimeout(() => disfa(t), 120));
+      const pronta = t.img.complete && t.img.naturalWidth ? Promise.resolve() : (t.img.decode ? t.img.decode().catch(() => {}) : Promise.resolve());
+      Promise.race([pronta, new Promise((r) => setTimeout(r, 1500))]).then(() => cuci(t));
     });
-  }, { threshold: 0.45 });
-  document.querySelectorAll(".collage-foto, .categoria .foto").forEach((cornice) => {
-    const t = preparaTelo(cornice);
-    teli.set(cornice, t);
+  }, { threshold: 0.4 });
+  document.querySelectorAll(".collage-foto, .categoria .foto").forEach((cornice, i) => {
+    cuciture.set(cornice, preparaCucitura(cornice));
     osservaFoto.observe(cornice);
   });
 }
