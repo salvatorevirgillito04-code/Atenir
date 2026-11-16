@@ -70,13 +70,24 @@ const filoOmbra = document.getElementById("filo-ombra");
 const filoSvg = document.getElementById("filo-svg");
 const gomitolo = document.getElementById("gomitolo");
 let lunghezzaFilo = 0, larghezzaFilo = 0;
+// Onda di archi da 22 px tra y=2 e y=12: la testata finisce esattamente sull'onda, senza bordo dritto
+const PASSO = 22, MEZZO = 7, ALTEZZA_ONDA = 5;
+const filoFondo = document.getElementById("filo-fondo");
+function ondaY(x) {
+  const i = Math.floor(x / PASSO), t = (x - i * PASSO) / PASSO;
+  const controllo = MEZZO + (i % 2 ? ALTEZZA_ONDA : -ALTEZZA_ONDA) * 2;
+  return MEZZO + 2 * t * (1 - t) * (controllo - MEZZO);
+}
 function disegnaFilo() {
   larghezzaFilo = filoSvg.clientWidth;
   filoSvg.setAttribute("viewBox", `0 0 ${larghezzaFilo} 16`);
-  let d = "M0 8";
-  for (let x = 0, i = 0; x < larghezzaFilo; x += 22, i++) d += ` Q${x + 11} ${i % 2 ? 13 : 3} ${x + 22} 8`;
-  filo.setAttribute("d", d);
-  filoOmbra.setAttribute("d", d);
+  let onda = "";
+  for (let x = 0, i = 0; x < larghezzaFilo + PASSO; x += PASSO, i++) {
+    onda += ` Q${x + PASSO / 2} ${MEZZO + (i % 2 ? ALTEZZA_ONDA : -ALTEZZA_ONDA) * 2} ${x + PASSO} ${MEZZO}`;
+  }
+  filo.setAttribute("d", `M0 ${MEZZO}${onda}`);
+  filoOmbra.setAttribute("d", `M0 ${MEZZO}${onda}`);
+  filoFondo.setAttribute("d", `M0 -1 L0 ${MEZZO}${onda} L${larghezzaFilo + PASSO * 2} -1 Z`);
   lunghezzaFilo = filo.getTotalLength();
   filo.style.strokeDasharray = `${lunghezzaFilo}`;
 }
@@ -117,8 +128,8 @@ function disegnaScroll() {
   const y = scrollY;
   const avanz = altezzaPagina > 0 ? Math.min(y / altezzaPagina, 1) : 0;
   const x = 18 + avanz * (larghezzaFilo - 36);
-  filo.style.strokeDashoffset = (lunghezzaFilo * (1 - x / larghezzaFilo)).toFixed(1);
-  gomitolo.style.transform = `translate3d(${x.toFixed(1)}px,0,0) rotate(${(x / 16 * 57.3).toFixed(1)}deg) scale(${(1 - avanz * 0.3).toFixed(3)})`;
+  filo.style.strokeDashoffset = (lunghezzaFilo * (1 - x / (larghezzaFilo + PASSO))).toFixed(1);
+  gomitolo.style.transform = `translate3d(${x.toFixed(1)}px,${(ondaY(x) - 16).toFixed(1)}px,0) rotate(${(x / 16 * 57.3).toFixed(1)}deg) scale(${(1 - avanz * 0.3).toFixed(3)})`;
   if (moto && y < innerHeight * 1.2) collage.forEach((el) => { el.style.translate = `0 ${(y * +el.dataset.velocita).toFixed(1)}px`; });
   if (!distanza) return;
   const p = Math.min(Math.max((y - inizioCollezione) / distanza, 0), 1);
